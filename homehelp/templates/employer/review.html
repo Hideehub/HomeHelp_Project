@@ -1,0 +1,22 @@
+{% extends "employer/dashboard.html" %}
+
+{% block content %}
+                <h2 class="mt-4 "> Review</h2>
+                {% for worker in workers %}
+                <form action="{{ url_for('submit_review', worker_id=worker.worker_id) }}" method="POST" class="mt-5">
+                {% endfor %}   
+                    <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
+                    <label for="worker" class="mt-2">Select Worker:</label> <br>
+                    <select name="worker_id" id="worker" class="form-select" required>
+                        <!-- Dynamically populate worker options -->
+                    {% for worker in workers %}
+                        <option value="{{ worker.worker_id }}">{{ worker.worker_fname }} {{worker.worker_lname}}</option>
+                     {% endfor %}   
+                    </select>
+                    <br>
+                    <label for="comment" class="mt-2">Review:</label>
+                    <textarea name="comment" id="comment" row=5 class= "form-control" required></textarea>
+                
+                    <button class="btn btn-success col-md-12 mt-3">Submit Review</button>
+                </form>
+                {% endblock %}

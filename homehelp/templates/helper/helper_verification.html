@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+    <title>Verification</title>
+    <style>
+          .color{
+            background-color: beige;
+            padding:100px;
+          }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+      {% set message = get_flashed_messages(with_categories=True) %}
+      {% if message %}
+        {% for msg , cat in message %}
+          {% if cat == 'errormsg' %}
+            <div class="alert alert-danger">{{msg}}</div>
+          {% else %}
+            <div class="alert alert-success">{{msg}}</div>
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+      <div class="row color">
+        <h2 class="mt-2 text-center text-success">Bio</h2>
+        <div class="col-md-12">
+            <form action="{{url_for('helper_verification', worker_id=worker_id)}}" method="post" class="mt-3" enctype="multipart/form-data"> 
+              <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
+                <div class="mb-2">
+                   <label for="" class="pb-2">About Yourself</label>
+                    <textarea name="exp_about" id="" class="form-control mb-3" rows="3"></textarea>
+                </div>
+                <div class="mb-2">
+                   <label for="" class="pb-2">Years of Experience</label>
+                   <input type="number" name="exp_years" class="form-control mb-3 p-2">
+                </div>
+                <div class="mb-2">
+                  <label for="" class="pb-2">Upload Your Image</label>
+                  <input type="file" name="exp_picture" class="form-control mb-3 p-2">
+                </div>
+                <div class="mb-2">
+                  <button class="btn btn-success col-md-6 offset-md-3 mt-5">Submit</button>
+                </div>
+            </form>
+        </div>
+      </div>
+    </div>
+</body>
+</html>

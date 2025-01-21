@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+    <title>Log in to your account - HomeHelp</title>
+    <style>
+      *{
+	      padding:0px;
+	      margin:0px;
+	      box-sizing:border-box;
+        font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+       }
+
+       .bg{
+        background-image: url(/static/images/mountingpic.jpg);
+        min-height: 700px;
+        background-size: cover;
+        background-position: 3%;
+       }
+
+       .pad{
+        padding-left: 100px;
+       }
+
+       .bord{
+        border:1px, solid white;
+        background-color: white;
+        align-items: center;
+        margin-top: 200px;
+        border-radius: 20px;
+       }
+
+        .overlay h1{
+            font-size: 60px;
+        }
+
+        .logo{
+          font-size: 40px;
+        }
+        
+        .style-helps{
+            padding-right: 100px;
+            border: 1px solid teal;
+            color: teal;
+            border-radius: 5px;
+            font-size: 18px;
+        }
+
+        .style-link{
+          padding-left: 5px !important;
+          font-size: 18px;
+        }
+        
+       #signinform input:focus{
+        box-shadow: none;
+        background-color: transparent;
+        border:1px solid green;
+       }
+
+       #loginform input:focus{
+        box-shadow: none;
+        background-color: transparent;
+        border:1px solid green;
+       }
+
+       #signin{
+        box-shadow: none;
+        background-color: transparent;
+       }
+       #login{
+        box-shadow: none;
+        background-color: transparent;
+       }
+       #create{
+        box-shadow: none;
+        background-color: transparent;
+       }
+       #log{
+        box-shadow: none;
+        background-color: transparent;
+       }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg ">
+        <div class="container-fluid">
+          <div class="pad">
+            <a class="navbar-brand logo" href="#">HomeHelp</a>
+          </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav ms-auto links">
+              <a class="nav-link style-link" href="/registration/">Sign up/Login</a>
+              <a class="nav-link style-helps" href="/helper/reg">Become an Helper</a>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <div class="container-fluid bg">
+          <div class="row pt-5">
+            <div class="col-md-6 offset-md-3 bord p-3 ">
+              <h1 class="text-center mt-3">HomeHelp</h1>
+                <div class="signup">
+                  <a href="/signup/" class="btn btn-primary form-control bg-success text-light mt-3 rounded-pill d-block " id="signin">Sign up</a>
+                  <a href="/login/" class="btn  border-dark id=log form-control text-success mt-3 rounded-pill d-block" id="login">Login</a>
+                  <p class="mt-5 text-center d-block" id="para">By signing up you agree to our <a href="#" class="text-success text-decoration-none ">Terms of Use </a> and <a href="" class="text-success text-decoration-none">Privacy Policy</a> .</p>
+                </div>
+            </div>
+          </div>
+      </div>
+
+
+      <!-- <script src="/static/jquery-3.7.1.min.js"></script>
+    <script>
+        
+          $('document').ready(function(){
+            $('#signin').click(function(){
+              $('#signinform').removeClass('d-none').addClass('d-block')
+              $('#signin').removeClass('d-block').addClass('d-none')
+              $('#login').removeClass('d-block').addClass('d-none')
+              $('#para').removeClass('d-block').addClass('d-none')
+            })
+
+            $('#login').click(function(){
+              $(this).addClass('bg-success')
+              $('#loginform').removeClass('d-none').addClass('d-block')
+              $('#signin').removeClass('d-block').addClass('d-none')
+              $('#login').removeClass('d-block').addClass('d-none')
+              $('#para').removeClass('d-block').addClass('d-none')
+            })
+          })
+    </script> -->
+</body>
+</html>

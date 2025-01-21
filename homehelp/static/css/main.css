@@ -1,0 +1,41 @@
+
+.noround{
+    border-radius: 0px;
+}
+
+
+.custom-btn{
+    color:white;
+    background-color: black;
+}
+.custom-btn:hover{
+    color:white;
+    background-color: black;
+}
+.blue-btn{
+    color:white;
+    background-color:teal;
+}
+.blue-btn:hover{
+    color:white;
+    background-color: teal;
+}
+.custom-color{
+    background-color: teal;
+} 
+  
+a{
+    color:black;
+}
+.custom-active{
+    background-color: rgb(2, 63, 63) ;
+    color:white;
+    border-radius: 0px;
+}
+.color{
+    background-color:teal;
+}
+.color:hover{
+    background-color: rgb(3, 41, 41);
+    color:white;
+}
