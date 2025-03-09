@@ -30,11 +30,13 @@ class Employer(db.Model):
     employer_phoneno = db.Column(db.String(100), nullable=True)
     employer_status = db.Column(db.String(10), default="active")
     date_registered = db.Column(db.DateTime(), default=datetime.utcnow)
+    employer_walletbalance = db.Column(db.Numeric, default=0)
 
     employer_stateid = db.Column(db.Integer, db.ForeignKey('state.state_id'), nullable=True)
 
     # relationship
     state = db.relationship('State', back_populates='employer')
+    payments = db.relationship("Payment", back_populates="employer", lazy=True)
 
 
 
@@ -52,6 +54,8 @@ class Worker(db.Model):
     worker_availability = db.Column(db.Enum('0','1'), nullable=False, server_default=('0'))
     worker_verification = db.Column(db.Enum('0','1'), nullable=False, server_default=('0'))
     worker_address = db.Column(db.Text(), nullable=True)
+    worker_price = db.Column(db.Numeric(10,2), nullable=False, default=0.00)
+    worker_walletbalance = db.Column(db.Numeric, default=0)
 
     worker_stateid = db.Column(db.Integer, db.ForeignKey('state.state_id'), nullable=True)
     worker_categoryid = db.Column(db.Integer, db.ForeignKey('category.cat_id'), nullable=True)
@@ -89,9 +93,12 @@ class Review(db.Model):
     review_comment = db.Column(db.Text(), nullable=False)
     review_workerid = db.Column(db.Integer, db.ForeignKey('worker.worker_id'),nullable=True)
     review_employerid = db.Column(db.Integer, db.ForeignKey('employer.employer_id'),nullable=True)
+    review_jobid = db.Column(db.Integer, db.ForeignKey('jobposting.post_id'), nullable=True)
+
 
     employer = db.relationship('Employer', backref='reviews')
     worker = db.relationship('Worker', backref='reviews_as_worker', lazy=True)
+    job = db.relationship("JobPosting", back_populates="reviews")
 
 class JobApplication(db.Model):
     __tablename__ ='jobapplication'
@@ -111,7 +118,7 @@ class JobPosting(db.Model):
     post_payrate = db.Column(db.Numeric, nullable=True)
     post_dateadded = db.Column(db.DateTime(), nullable=True)
     post_closingdate = db.Column(db.DateTime(), nullable=True)
-    post_status = db.Column(db.Enum('0','1'), nullable=True, server_default=('0'))
+    post_status = db.Column(db.Enum('0','1','2','3','4'), nullable=False, server_default=('0'))
     post_categoryid = db.Column(db.Integer, db.ForeignKey('category.cat_id'),nullable=True)
     post_employerid = db.Column(db.Integer, db.ForeignKey('employer.employer_id'),nullable=True)
     post_workerid = db.Column(db.Integer, db.ForeignKey('worker.worker_id'), nullable=True)
@@ -120,15 +127,56 @@ class JobPosting(db.Model):
     category = db.relationship('Category', back_populates='job_postings')
     employer = db.relationship('Employer', backref='job_postings', lazy=True)
     worker = db.relationship('Worker', backref='job_postings', lazy=True)
+    reviews = db.relationship("Review", back_populates="job", lazy=True)
 
 class Payment(db.Model):
     pay_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     pay_amount = db.Column(db.Numeric, nullable=False)
-    pay_date = db.Column(db.DateTime(), nullable=False)
-    pay_status = db.Column(db.Enum('0','1'), nullable=False, server_default=('0'))
-    pay_employerid =  db.Column(db.Integer, db.ForeignKey('employer.employer_id'),nullable=True)
-    pay_appid =  db.Column(db.Integer, db.ForeignKey('worker.worker_id'),nullable=True)
+    pay_date = db.Column(db.DateTime(), nullable=True)
+    pay_status= db.Column(db.Enum('pending','paid','failed','credited'), nullable=False, server_default=("pending"))
+    pay_data = db.Column(db.Text(), nullable=True)    
+    pay_ref = db.Column(db.String(100), nullable=True)
+    pay_employerid = db.Column(db.Integer, db.ForeignKey('employer.employer_id'),nullable=True)
+    pay_workerid =  db.Column(db.Integer, db.ForeignKey('worker.worker_id'),nullable=True)
 
+    #relationship
+    employer = db.relationship("Employer", back_populates="payments")
+
+
+class WorkerRecipient(db.Model):
+    __tablename__ = 'worker_recipient'
+    recp_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    recp_workerid = db.Column(db.Integer, db.ForeignKey('worker.worker_id'), nullable=False, unique=True)
+    recp_code = db.Column(db.String(100), nullable=True)
+    recp_createdat = db.Column(db.DateTime, default=datetime.utcnow)
+    recp_bankaccount_name = db.Column(db.String(100), nullable=False)
+    recp_bank_number = db.Column(db.String(20), nullable=False)
+    recp_bank_code = db.Column(db.String(10), nullable=False)
+
+    worker = db.relationship("Worker", backref="worker_recipient", lazy=True)
+   
+
+
+class EmployerRecipient(db.Model):
+    __tablename__ = 'employer_recipient'
+    emprecp_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    emprecp_employerid = db.Column(db.Integer, db.ForeignKey('employer.employer_id'), nullable=False, unique=True)
+    emprecp_code = db.Column(db.String(100), nullable=True)
+    emprecp_createdat = db.Column(db.DateTime, default=datetime.utcnow)
+    emprecp_bankaccount_name = db.Column(db.String(100), nullable=False)
+    emprecp_bank_number = db.Column(db.String(20), nullable=False)
+    emprecp_bank_code = db.Column(db.String(10), nullable=False)
+
+    employer = db.relationship("Employer", backref="worker_recipients", lazy=True)
+
+
+class Withdrawal(db.Model):
+    withdraw_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    withdraw_userid = db.Column(db.Integer, nullable=False)          # Either employer or worker
+    withdraw_usertype = db.Column(db.String(100), nullable=False)       # e.g., 'worker' or 'employer'
+    withdraw_amount = db.Column(db.Numeric, nullable=False)
+    withdraw_status = db.Column(db.String(50), nullable=False, default='pending')  # pending, processed, failed, etc.
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 
 

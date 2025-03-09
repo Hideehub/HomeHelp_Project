@@ -55,6 +55,12 @@
           color:rgb(160,169,184);
         }
         
+        .padd{
+            padding-left: 200px;
+        }
+        .padd a{
+            font-size: 24px;
+        }
     </style>
 </head>
 <body>
@@ -68,7 +74,8 @@
             <span class="navbar-toggler-icon"></span>
           </button>
           <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-            <div class="navbar-nav ms-auto links">
+            <div class="navbar-nav mx-auto padd links">
+                <a class="nav-link style-link" href="/helper/login/">Login</a>
             </div>
           </div>
         </div>
@@ -85,7 +92,7 @@
                     <p class="text-center pt-3 para">We help artisans with increased visibility more reach, direct sales channel, enhanced brand image, marketing opportunity, customer insights and long term sustainability. With HomeHelp, you have the freedom and support to be your own boss.</p>
                         <!-- Button trigger modal -->
                         <button type="button" class="btn btn-success form-control" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                            Get started
+                            Get started/Signup
                         </button>
                     
                 </div>
@@ -186,6 +193,7 @@
                         <!-- <input type="text" placeholder="lastname" class="form-control-sm p-3 p-3"> -->
                         </div>
                         {{ helpsigninform.phone(placeholder='Phone Number', class_='form-control p-3')}}
+                        {{ helpsigninform.price(placeholder='Set Your Price', class_='form-control p-3')}}
                         <!-- <input type="number" placeholder="Mobile Phone" class="form-control p-3"> -->
                         {{ helpsigninform.password(placeholder='Password', class_='form-control p-3')}}
                         {{ helpsigninform.cpassword(placeholder='Confirm Password', class_='form-control p-3')}}

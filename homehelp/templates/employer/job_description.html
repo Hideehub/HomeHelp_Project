@@ -1,0 +1,22 @@
+{% extends "employer/all_helpers.html" %}
+
+{% block content %}
+
+<div class="container mt-5">
+    <h2>Describe the Job for {{ worker.worker_fname }} {{ worker.worker_lname }}</h2>
+    <form method="POST" action="/send-job-description/">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="worker_email" value="{{ worker.worker_email }}">
+        <input type="hidden" name="worker_name" value="{{ worker.worker_fname }} {{ worker.worker_lname }}">
+        <input type="hidden" name="worker_cat" value="{{ worker.category.cat_id }}">
+        <input type="hidden" name="worker_catname" value="{{ worker.category.cat_name }}">
+        <input type="hidden" name="worker_id" value="{{ worker.worker_id }}">
+        <div class="mb-3">
+            <label for="job-description" class="form-label">Describe the Job</label>
+            <textarea class="form-control" id="job-description" name="job_description" rows="4" placeholder="Enter job details here..." required></textarea>
+        </div>
+        <button type="submit" class="btn btn-success">Send Job</button>
+    </form>
+</div>
+
+{% endblock %}

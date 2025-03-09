@@ -24,6 +24,9 @@
                 <li class="nav-item">
                   <a class="nav-link" href="/about/">About</a>
                 </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="/helper/request_withdrawal/"><i class="fa-solid fa-wallet">Wallet</i></a>
+                </li>
               </ul>
               <div class="d-flex" role="search">
                 <a href="/helper/profile/" class="btn btn-dark btn-sm" type="submit">Hi {{worker_deets.worker_lname}} {{worker_deets.worker_fname}}</a>
@@ -81,6 +84,17 @@
 
           <div class="col-md-9 p-4">
             {% block content %}
+            {% set message = get_flashed_messages(with_categories=True) %}
+            {% if message %}
+              {% for msg , cat in message %}
+                {% if cat == 'errormsg' %}
+                  <div class="alert alert-danger">{{msg}}</div>
+                {% else %}
+                  <div class="alert alert-success">{{msg}}</div>
+                {% endif %}
+              {% endfor %}
+            {% endif %}
+
             <div class="container mt-5">
               <h2>Welcome, {{ worker_deets.worker_fname }}!</h2>
               <h4>Your Job Assignments</h4>
@@ -90,20 +104,29 @@
                       {% for job in assigned_jobs %}
                           <li class="list-group-item">
                               <p><strong>Job Description:</strong> {{ job.post_description }}</p>
-                              <form method="POST" action="/update/jobstatus/">
-                                <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
-                                  <input type="hidden" name="job_id" value="{{ job.app_id }}">
-                                  <!-- <button type="submit" name="action" value="1" class="btn btn-success">Accept</button>
-                                  <button type="submit" name="action" value="0" class="btn btn-danger">Reject</button> -->
-                              </form>
+                              {% if job.post_status == '0' %}
+                                <form method="POST" action="/update/jobstatus/">
+                                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                  <input type="hidden" name="post_id" value="{{ job.post_id }}">
+                                  <button type="submit" name="action" value="1" class="btn btn-success">Accept</button>
+                                  <button type="submit" name="action" value="2" class="btn btn-danger">Reject</button>
+                                </form>
+                              {% elif job.post_status == '1' %}
+                                <span class="badge bg-success">Accepted</span>
+                              {% elif job.post_status == '2' %}
+                                <span class="badge bg-danger">Rejected</span>
+                              {% elif job.post_status == '3' %}
+                                <span class="badge bg-info">Job Completed</span>
+                              {% elif job.post_status == '4' %}
+                                <span class="badge bg-secondary">Cancelled</span>
+                              {% endif %}
                           </li>
                       {% endfor %}
                   </ul>
               {% else %}
                   <p>No job assignments yet.</p>
               {% endif %}
-          </div>
-          
+            </div>
             
             {% endblock %}
           </div>

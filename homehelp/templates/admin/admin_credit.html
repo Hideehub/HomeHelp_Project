@@ -1,0 +1,72 @@
+{% extends "admin/admin_dashboard.html" %}
+
+{% block content %}
+{% set message = get_flashed_messages(with_categories=True) %}
+                {% if message %}
+                  {% for msg , cat in message %}
+                    {% if cat == 'errormsg' %}
+                      <div class="alert alert-danger">{{msg}}</div>
+                    {% else %}
+                      <div class="alert alert-success">{{msg}}</div>
+                    {% endif %}
+                  {% endfor %}
+                {% endif %}
+<div class="container mt-5">
+    <h2>Pending Withdrawal Requests</h2>
+    {% if withdrawals %}
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>User Type</th>
+            <th>User ID</th>
+            <th>Amount</th>
+            <th>Bank Details</th>
+            <th>Requested At</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for w in withdrawals %}
+            <tr>
+              <td>{{ w.withdraw_id }}</td>
+              <td>{{ w.withdraw_usertype }}</td>
+              <td>{{ w.withdraw_userid }}</td>
+              <td>{{ w.withdraw_amount }}</td>
+              <td>
+                    {% if w.withdraw_usertype == 'employer' %}
+                      {% set payout = payout_map[w.withdraw_userid] %}
+                      {% if payout %}
+                        {{ payout.emprecp_bankaccount_name }}<br>
+                        {{ payout.emprecp_bank_number }}<br>
+                        {{ payout.emprecp_bank_code }}
+                      {% else %}
+                        Not Provided
+                      {% endif %}
+                    {% elif w.withdraw_usertype == 'worker' %}
+                      {% set payout = payout_map[w.withdraw_userid] %}
+                      {% if payout %}
+                        {{ payout.recp_bankaccount_name }}<br>
+                        {{ payout.recp_bank_number }}<br>
+                        {{ payout.recp_bank_code }}
+                      {% else %}
+                        Not Provided
+                      {% endif %}
+                    {% endif %}
+              </td>
+              <td>{{ w.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+              <td>
+                <form method="POST" action="{{ url_for('process_withdrawal', withdraw_id=w.withdraw_id) }}">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <button type="submit" class="btn btn-primary btn-sm">Mark as Processed</button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>No pending withdrawals.</p>
+    {% endif %}
+</div>
+{% endblock %}

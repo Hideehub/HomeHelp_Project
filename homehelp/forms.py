@@ -24,10 +24,10 @@ class AdminLoginForm(FlaskForm):
 class SigninForm(FlaskForm):
     name = StringField('Full Name', validators=[DataRequired(), Length(min=2, max=100)])
     email = StringField('Email', validators=[DataRequired(), Email()])
-    gender = SelectField('Gender', choices=[('','Select Gender'),('male','Male'),('female','Female'),('other','Other')],validators=[InputRequired()])
+    gender = SelectField('Gender', choices=[('','Select Gender'),('male','Male'),('female','Female'),('others','Others')],validators=[InputRequired()])
     phone = IntegerField('Phone Number', validators=[DataRequired()])
     address = StringField('Address', validators=[DataRequired()])
-    password = PasswordField('Password', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired(), Length(min=6, max=100)])
     cpassword = PasswordField('Password', validators=[DataRequired()])
     state = SelectField('State', choices=[(0,'Select your state'),(1, 'Abia State'), (2, 'Adamawa State'),
                                           (3, 'Akwa Ibom State'),
@@ -75,11 +75,12 @@ class HelpSigninForm(FlaskForm):
     fname = StringField('Name', validators=[DataRequired(message='Enter your first name')])
     lname = StringField('Name', validators=[DataRequired(message='Enter your last name')])
     email = EmailField('Email', validators=[Email(message='Enter Email')])
-    phone = StringField('Name', validators=[DataRequired(message='Enter your phone number')])
+    phone = StringField('Phone', validators=[DataRequired(message='Enter your phone number')])
+    price = StringField('Price', validators=[DataRequired(message='Set your price')])
     password = PasswordField('Password', validators=[DataRequired(message='Password cannot be empty')])
     cpassword = PasswordField('Password', validators=[DataRequired(message='Password cannot be empty')])
     # check = BooleanField('check')
-    address = TextAreaField('Description', validators=[])
+    address = TextAreaField('Description', validators=[DataRequired(message='Address cannot be empty')])
     send = SubmitField('Create Account')
     image = FileField("Image", validators=[FileAllowed(['jpg','jpeg','png','gif'],'Images only')])
     category = SelectField('Category', choices=[], validators=[DataRequired()])

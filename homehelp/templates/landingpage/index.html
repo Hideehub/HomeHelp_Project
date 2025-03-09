@@ -196,7 +196,12 @@
               {% else %}
             <a class="nav-link style-link" href="/registration/">Sign up/Login</a>
             {% endif %}
-            <a class="nav-link style-helps" href="/helper/register/">Become an Helper</a>
+            {% if worker_deets %}
+              <a href="/helper/dashboard/" style="color:black; text-decoration: none; padding-top:10px; padding-right:10px;" type="submit">Hi {{worker_deets.worker_fname}} {{worker_deets.worker_lname}}</a>
+              <a href="/helper/logout/" class="log">Logout</a>
+            {% else %}
+              <a class="nav-link style-helps" href="/helper/register/">Become an Helper</a>
+            {% endif %}
           </div>
         </div>
       </div>
@@ -256,35 +261,38 @@
                 </div>
             </div>
 
-            {% if worker_data %}
-                <div class="row justify-content-around">
-                    {% for w in worker_data %}
-                        <div class="col-md-3 text-center mt-5 ml-2 help shadow pb-5">
-                            {% if w.experiences %}
-                                {% for experience in w.experiences %}
-                                    {% if experience.exp_picture == None or experience.exp_picture == '' %}
-                                        <img src="/static/images/icons/helps.png" alt="an helper" class="helps">
-                                    {% else %}
-                                        <img src="/static/images/uploads/{{ experience.exp_picture }}" alt="an helper" class="helps">
-                                    {% endif %}
-                                {% endfor %}
-                            {% else %}
-                                <img src="/static/images/icons/helps.png" alt="an helper" class="helps">
-                            {% endif %}
-
-                            <h3 class="pt-2">{{ w.worker_fname }} {{ w.worker_lname }}</h3>
-                            <p>{{ w.category.cat_name if w.category else 'No Category' }}</p>  <!-- Display worker category -->
-                            <img src="/static/images/icons/location.png" alt="a location icon" class="img-fluid resizeicon">
-                            <span>{{ w.state.state_name if w.state else 'No State' }}</span> <!-- Display the state name -->
-                            <br>
-                            <div class="pt-3">
-                              <p style="font-size:20px;"><a href="/hire/now/" class="btn btn-success" > Hire Now</a></p>
-                            </div>
-                            
+            {% if workers %}
+            <div class="row justify-content-around">
+                {% for worker in workers %}
+                    <div class="col-md-3 text-center mt-5 ml-2 help shadow pb-5">
+                        {% if worker.experiences %}
+                            {% for experience in worker.experiences %}
+                                {% if experience.exp_picture %}
+                                    <img src="/static/images/uploads/{{ experience.exp_picture }}" alt="Worker Image" class="helps">
+                                {% else %}
+                                    <img src="/static/images/icons/helps.png" alt="Default Helper Icon" class="helps">
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            <img src="/static/images/icons/helps.png" alt="Default Helper Icon" class="helps">
+                        {% endif %}
+                        <h3 class="pt-2">{{ worker.worker_fname }} {{ worker.worker_lname }}</h3>
+                        <p>{{ worker.category.cat_name if worker.category else 'No Category' }}</p>
+                        <img src="/static/images/icons/location.png" alt="Location Icon" class="img-fluid resizeicon">
+                        <span>{{ worker.state.state_name if worker.state else 'No State' }}</span>
+                        <br>
+                        <div class="pt-3">
+                            <p style="font-size:20px;">
+                                <a href="/hire/now/" class="btn btn-success">Hire Now</a>
+                            </p>
                         </div>
-                    {% endfor %}
-                </div>
-            {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No workers found.</p>
+        {% endif %}
+        
           </div>
           </div>
 
@@ -318,9 +326,9 @@
                 <h2 class="pb-3">See what happy customers are saying about HomeHelp</h2>
               </div>
             </div>
-            {% if review %}
+            {% if reviews %}
             <div class="row justify-content-center resize">
-              {% for rev in review %}
+              {% for rev in reviews %}
               <div class="col-md-4 p-5 wrap ">
                 <div class="card text-center p-3">
                   <h3>{{rev.employer.employer_name}}</h3>
