@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/fontawesome/css/all.css">
+    <title>About HomeHelp-</title>
+    <style>
+      *{
+	      padding:0px;
+	      margin:0px;
+	      box-sizing:border-box;
+        font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+       }
+
+       .pad{
+        padding-left: 100px;
+       }
+
+        .logo{
+          font-size: 40px;
+        }
+        
+        .style-helps{
+            padding-right: 100px;
+            border: 1px solid teal;
+            color: teal;
+            border-radius: 5px;
+            font-size: 18px;
+            margin-right: 60px;
+        }
+
+        .style-link{
+          padding: 10px !important; 
+          font-size: 18px;
+        }
+
+        .bg{
+          background-image: url(/static/images/painter.jpg);
+          min-height: 300px;
+          background-size: cover;
+        }
+        
+        .pad-abt{
+          padding-top: 80px;;
+        }
+        .para{
+          font-size: 22px;
+        }
+        .footer-bg{
+          background-color:rgb(103, 114, 126);
+          padding-left: 100px;
+          padding-right: 100px;
+        }
+        .footer-bg h4{
+          color:rgb(160,169,184);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg ">
+        <div class="container-fluid">
+          <div class="pad">
+            <a class="navbar-brand logo" href="#">HomeHelp</a>
+          </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav ms-auto links">
+              <a class="nav-link style-link" href="/">Home</a>
+              <a class="nav-link style-link" href="/registration/">Sign up/Login</a>
+              <a class="nav-link style-helps" href="/helper/register/">Become an Helper</a>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <div class="container-fluid bg">
+        <div class="row">
+          <div class="col-md-12 pt-5">
+            <h2 class="text-center text-light justify-content-center pad-abt">About Us</h2>
+          </div>
+        </div>
+      </div>
+
+      <div class="container">
+        <div class="row">
+            <div class="col-md-8 offset-md-2 mt-5">
+                <h2 class="text-center">Simplifying Life, One Task at a Time</h2>
+                <p class="text-center pt-3 mb-5 para">Imagine a world where household chores disappear,
+                    and free time reapperars. Where trusted helpers arrive at your doorstep,
+                    ready to tackle any task.Welcome to homehelp - your partner in making life easier.
+                </p>
+            </div>
+        </div>
+      </div>
+
+      <div class="container-fluid pt-5">
+        <div class="row footer-bg mt-5 pt-5">
+          <div class="col-md-12 pl-4">
+            <h4 class="pt-4"> Follow us! We're friendly: <a href="facebook.com" target="_blank" class="text-decoration-none text-light"><i class="fa-brands fa-square-facebook"></i></a> |<a href=""><i class="fa-brands fa-square-instagram text-decoration-none text-light"></i></a>|
+            <a href="" class="text-decoration-none text-light"><i class="fa-brands fa-linkedin-in"></i></a>| <a href="twitter.com" class="text-decoration-none text-light"><i class="fa-brands fa-x-twitter"></i></a></h4>
+          </div>
+          <div class="col-md-4 pt-4">
+            <h4>Trust & Safety</h4>
+            <p> <a href="" class="text-decoration-none text-light">Privacy Policy</a></p>
+            <p> <a href="" class="text-decoration-none text-light">Term of use</a></p>
+          </div>
+          <div class="col-md-4 pt-4">
+            <h4>Company</h4>
+            <p><a href="/about/" class="text-decoration-none text-light">About us</a></p>
+            <p><a href="" class="text-decoration-none text-light">Blog</a></p>
+            <p><a href="" class="text-decoration-none text-light">Become an helper</a></p>
+          </div>
+          <div class="col-md-4 pt-4">
+            <h4>Subscribe to our newsletter to stay connected</h4>
+            <input type="text" placeholder="Email Address" class="form-control-lg border-0">
+            <button class="btn btn-success">Subscribe</button>
+          </div>
+          <hr class="text-light">
+          <p class="text-center text-light">&#169 2024 HomeHelp Inc. All Rights Reserved</p>
+        </div>
+      </div>
+      <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+</body>
+</html>

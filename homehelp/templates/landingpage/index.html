@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" href="/static/fontawesome/css/all.css">
+    <link rel="stylesheet" href="/static/animate.min.css">
+    <title>HomeHelp</title>
+    <style>
+
+      *{
+	      padding:0px;
+	      margin:0px;
+	      box-sizing:border-box;
+        font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        max-width: 100%;
+       }
+       
+       .pad{
+        padding-left: 100px;
+       }
+
+        .overlay{
+            background-image:url(/static/images/index-bg.jpg);
+            background-size: cover;
+            max-height: 600px;
+        }
+
+        .overlay h1{
+            font-size: 60px;
+        }
+
+        #search{
+            background-color: teal;
+            color:white;
+            border:none;
+            border-radius:0px 30px 30px 0px ;
+            padding:20px 30px;
+            cursor:pointer;
+        }
+
+        #search:hover{
+          background-color:rgb(3, 70, 70);
+        }
+
+        #search-input{
+            flex-grow: 1;
+            border-radius: 30px 0px 0px 30px;
+            border: 1px solid teal;
+        }
+
+        .logo{
+          font-size: 40px;
+        }
+        
+        .style-helps{
+            padding-right: 100px;
+            border: 1px solid teal;
+            color: teal;
+            border-radius: 5px;
+            font-size: 18px;
+            margin-right: 100px;
+        }
+
+        .style-link{
+          padding: 10px;
+          font-size: 18px;
+        }
+       
+        .contain{
+          justify-content: center;
+          
+        }
+       
+        .btn:hover{
+          border: none;
+        }
+
+        .h1{
+          border:1px
+        }
+       
+        .apply{
+          padding-top: 20px;
+          padding-left: 50px;
+          border-radius: 30px 0px 0px 30px;
+        }
+
+        .bg{
+          background-color:lavender;
+          min-height: 300px;
+          border-radius: 10px;
+          margin: 20px;
+        }
+
+        .estimate{
+          background-color: rgb(244, 250, 245);
+          margin-top: 100px;
+        }
+        .estimate,span{
+          font-size: 22px;
+        }
+
+        .span1{
+          color: teal;
+          font-size: 25px;
+        }
+        .helps{
+          width:100px;
+          height:100px;
+          border-radius:50%;
+        }
+
+        .help{
+          padding-top: 20px;
+          background-color: rgb(245, 247, 246);
+        }
+        
+        .help button{
+          background-color:teal
+        }
+
+        .helpers button:hover{
+          background-color:rgb(3, 70, 70);
+        }
+
+        .helpers h2{
+          font-size: 42px;
+        }
+
+        .resizeicon{
+          width:30px;
+        }
+        .color{
+          color: teal;
+          font-size: 20px;
+        }
+
+        .resize p{
+          font-size: 20px;
+        }
+
+        .satisfaction span{
+          font-size:40px;
+        }
+        .satisfaction h1{
+          font-size: 40px;
+        }
+
+        .reviews,.satisfaction{
+          padding-left: 170px;
+        }
+      
+        .how_bg{
+          background-color:beige;
+        }
+        
+
+        .footer-bg{
+          background-color:rgb(103, 114, 126);
+          padding-left: 100px;
+          padding-right: 100px;
+        }
+        
+        .footer-bg,h4{
+          color:rgb(160,169,184);
+        }
+        
+        .log{
+            color:black; 
+            text-decoration: none; 
+            padding-top:10px; 
+            padding-right:10px;
+        }
+        .log:hover{
+            color: teal;
+        }
+    </style>
+</head>
+<body>
+    <!-- navbar -->
+    <nav class="navbar navbar-expand-lg ">
+      <div class="container-fluid">
+        <div class="pad">
+          <a class="navbar-brand logo" href="#">HomeHelp</a>
+        </div>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+          <div class="navbar-nav ms-auto links">
+              {% if employer_deets %}
+                  <a href="/employer/dashboard/" style="color:black; text-decoration: none; padding-top:10px; padding-right:10px;" type="submit">Hi {{employer_deets.employer_name}}</a>
+                  <a href="/logout/" class="log">Logout</a>
+              {% else %}
+            <a class="nav-link style-link" href="/registration/">Sign up/Login</a>
+            {% endif %}
+            {% if worker_deets %}
+              <a href="/helper/dashboard/" style="color:black; text-decoration: none; padding-top:10px; padding-right:10px;" type="submit">Hi {{worker_deets.worker_fname}} {{worker_deets.worker_lname}}</a>
+              <a href="/helper/logout/" class="log">Logout</a>
+            {% else %}
+              <a class="nav-link style-helps" href="/helper/register/">Become an Helper</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </nav>
+    
+      <hr>
+      <!-- endnav -->
+
+        <div class="container-fluid overlay">
+            <div class="row ">
+                <div class="col-md-12 pt-5">
+                    <h1 class="text-center pt-5">Book trusted help <br>for home tasks</h1>
+                </div>
+            </div>
+              <div class="row">
+                <div class="col-md-6 offset-md-3 pt-5">
+                    <div class="search-container d-flex">
+                        <input type="text" placeholder="what do you need help with?" id="search-input" class="form-control-lg p-3 rmb" name="search"> 
+                        <button class="btn-primary pl-5 " id="search"><i class="fa-solid fa-magnifying-glass fa-1x text-light"></i></button>
+                    </div>
+                    <p id="show" class="text-center"></p>
+                  </div>
+              </div>
+        </div>
+
+        <div class="container-fluid">
+          <div class="row pt-4">
+            <div class="col-md offset-md-1 pt-5">
+              <p><i class="fa-solid fa-wrench fa-2x"></i><br>Furniture</p>
+            </div>
+            <div class="col-md pt-5">
+              <p><i class="fa-solid fa-truck fa-2x"></i><br>Moving</p>
+            </div>
+            <div class="col-md pt-5">
+              <p><i class="fa-solid fa-toolbox fa-2x "></i><br>Home Repairs</p>
+            </div>
+            <div class="col-md pt-5">
+              <p><i class="fa-solid fa-paint-roller fa-2x"></i><br>Painting</p>
+            </div>
+            <div class="col-md pt-5">
+              <p><i class="fa-solid fa-broom fa-2x"></i><br>Cleaning</p>
+            </div>
+            <div class="col-md pt-5">
+              <p><i class="fa-solid fa-fire fa-2x"></i><br>Trending</p>
+            </div>
+           </div>
+           <hr>
+        </div>
+              
+
+          <!-- Section one -->
+          <div class="container-fluid">
+          <div class="helpers">
+            <div class="row mt-5">
+                <div class="col-md-12 pt-5">
+                    <h2 class="text-center">Hire From Our Wide Range Of Skilled Artisans</h2>
+                </div>
+            </div>
+
+            {% if workers %}
+            <div class="row justify-content-around">
+                {% for worker in workers %}
+                    <div class="col-md-3 text-center mt-5 ml-2 help shadow pb-5">
+                        {% if worker.experiences %}
+                            {% for experience in worker.experiences %}
+                                {% if experience.exp_picture %}
+                                    <img src="/static/images/uploads/{{ experience.exp_picture }}" alt="Worker Image" class="helps">
+                                {% else %}
+                                    <img src="/static/images/icons/helps.png" alt="Default Helper Icon" class="helps">
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            <img src="/static/images/icons/helps.png" alt="Default Helper Icon" class="helps">
+                        {% endif %}
+                        <h3 class="pt-2">{{ worker.worker_fname }} {{ worker.worker_lname }}</h3>
+                        <p>{{ worker.category.cat_name if worker.category else 'No Category' }}</p>
+                        <img src="/static/images/icons/location.png" alt="Location Icon" class="img-fluid resizeicon">
+                        <span>{{ worker.state.state_name if worker.state else 'No State' }}</span>
+                        <br>
+                        <div class="pt-3">
+                            <p style="font-size:20px;">
+                                <a href="/hire/now/" class="btn btn-success">Hire Now</a>
+                            </p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No workers found.</p>
+        {% endif %}
+        
+          </div>
+          </div>
+
+
+            <!-- Section two -->
+            <div class="container-fluid">
+            <div class="row estimate pt-5 pb-5 justify-content-center">
+                <div class="col-md-2"> 
+                  <span class="text-center pt-3">Furnitures <br> Assemblies: <br> </span>
+                  <span class="text-center span1">15,000+</span>
+                </div>
+                <div class="col-md-2">
+                  <span class="text-center pt-3">Homes Cleaned:</span>
+                  <span class="text-center span1">20,000+</span>
+                </div>
+                <div class="col-md-2">
+                  <span class="text-center pt-3">Homes Repairs:</span>
+                  <span class="text-center span1">13,000+</span>
+                </div>
+                <div class="col-md-2">
+                  <span class="text-center pt-3">Moving tasks:</span>
+                  <span class="text-center span1">30,000+</span>
+                </div>
+            </div>
+            </div>
+
+            <!-- Section three -->
+            <div class="container-fluid">
+            <div class="row reviews justify-content-center">
+              <div class="col-md-12 pt-5 mt-5 ">
+                <h2 class="pb-3">See what happy customers are saying about HomeHelp</h2>
+              </div>
+            </div>
+            {% if reviews %}
+            <div class="row justify-content-center resize">
+              {% for rev in reviews %}
+              <div class="col-md-4 p-5 wrap ">
+                <div class="card text-center p-3">
+                  <h3>{{rev.employer.employer_name}}</h3>
+                <p>"{{rev.review_comment}}"</p>
+                {% if rev.worker and rev.worker.category %}
+                <p class="color">{{ rev.worker.category.cat_name }}</p>  <!-- Display category name -->
+                {% else %}
+                <p class="color">No Category</p>
+                {% endif %}
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+            {% endif %}
+          </div>
+              
+            
+            <div class="container-fluid">
+              <div class="row estimate p-5 justify-content-center">
+                <div class="col-md-10 offset-md-1 pb-3 ">
+                  <h1 class="pb-3">Your Satisfaction, <b style="color:teal">Assured</b> </h1>
+                </div>
+              <div class="col-md-3">
+                <h4>Satisfaction Pledge</h4>
+                <p>If you dont love our service,we'll work to make it right.</p>
+              </div>
+              <div class="col-md-3">
+                <h4>Background Checked</h4>
+                <p>Helpers are always background checked before joining the platform</p>
+              </div>
+              <div class="col-md-3">
+                <h4>Dedicated Support</h4>
+                <p>Friendly customer service when you need us, anytime, everyday of the week</p>
+              </div>
+              </div>
+            </div>
+        
+
+
+            <div class="container-fluid">
+              <div class="row how_bg justify-content-around pb-5">
+                <div class="col-md-4 offset-md-1 ">
+                  <h3 class="pt-5">How it works</h3>
+                  <i class="fa-solid fa-1 fa-3x pt-3 text-success"></i>
+                  <span>Search and choose an helper around your location by price,skills and reviews.</span> <br><br>
+
+                  <i class="fa-solid fa-2 fa-3x text-warning"></i>
+                  <span>Your search would be matched with a certified Helper to begin a direct communication.</span> <br> <br>
+
+                  <i class="fa-solid fa-3 fa-3x text-success"></i>
+                  <span>Chat, pay, tip, and review all in one place.</span>
+                </div>
+                <div class="col-md-6 pt-5">
+                  <img src="/static/images/how.jpg" alt="" class="img-fluid img-thumbnail">
+                </div>
+               </div>
+              </div>
+
+          
+               <!-- footer -->
+        <div class="container-fluid">
+          <div class="row footer-bg">
+            <div class="col-md-12">
+              <h4 class="pt-4"> Follow us! We're friendly: <a href="facebook.com" target="_blank" class="text-decoration-none text-light"><i class="fa-brands fa-square-facebook"></i></a> |<a href=""><i class="fa-brands fa-square-instagram text-decoration-none text-light"></i></a>|
+              <a href="" class="text-decoration-none text-light"><i class="fa-brands fa-linkedin-in"></i></a>| <a href="twitter.com" class="text-decoration-none text-light"><i class="fa-brands fa-x-twitter"></i></a></h4>
+            </div>
+            <div class="col-md-4 pt-4">
+              <h4>Trust & Safety</h4>
+              <p> <a href="" class="text-decoration-none text-light">Privacy Policy</a></p>
+              <p> <a href="" class="text-decoration-none text-light">Term of use</a></p>
+            </div>
+            <div class="col-md-4 pt-4">
+              <h4>Company</h4>
+              <p><a href="/about/" class="text-decoration-none text-light">About us</a></p>
+              <p><a href="/helper/register/" class="text-decoration-none text-light">Become an helper</a></p>
+            </div>
+            <div class="col-md-4 pt-4">
+              <h4>Subscribe to our newsletter to stay connected</h4>
+              <input type="text" placeholder="Email Address" class="form-control-lg ">
+              <button class="btn btn-success">Subscribe</button>
+            </div>
+            <hr class="text-light">
+            <p class="text-center text-light">&#169 2024 HomeHelp Inc. All Rights Reserved</p>
+          </div>
+                          
+        </div>
+        <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+        <script src="/static/jquery-3.7.1.min.js"></script>
+        <script>
+          $(document).ready(function(){
+            
+            $('#search-input').keyup(function(){
+                var searchData = $(this).val()
+                $.ajax({
+                    url:'/ajax/search/',
+                    type: 'POST',
+                    data:{search:searchData, csrf_token:'{{csrf_token()}}'},
+                    beforeSend:function(){
+                        $('#show').html('<img src="/static/images/gif/spinner.gif">')
+                    },
+                    success:function(resp){
+                        $('#show').html(resp)
+                    },
+                    error:function(err){
+                        console.log(err);
+                    }
+                })
+              })
+
+          });
+      </script>
+    </body>
+  </html>

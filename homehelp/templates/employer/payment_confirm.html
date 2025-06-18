@@ -1,0 +1,26 @@
+{% extends "employer/all_helpers.html" %}
+
+{% block content %}
+<h1>Make payment to promote your business</h1>
+
+<p>Click on confirmation button when you are ready to pay...</p>
+
+<form action="/pay/confirm/{{worker.worker_id}}" method="post">
+
+  <div class="mb-3">
+      <input type="hidden" value="{{ csrf_token()}}" name="csrf_token">
+      <p> Amount: &#8358; {{ trxdeets.pay_amount}}</p>
+  </div>
+  <div class="mb-3">
+      <label for=""> Employer Name: {{ trxdeets.employer.employer_name }}</label>
+  </div>
+  <div class="mb-3">
+      <label class="text text-danger"> Transaction Ref: {{ trxdeets.pay_ref }}</label>
+      <label > Please take note of the above transaction ref</label>
+  </div>
+  <div class="mb-3">
+      <button class="btn btn-secondary noround mx-3" type="button" onclick="document.location.href='/dashboard/'">Cancel</button>
+      <button class="btn btn-danger noround">Continue</button>
+  </div>
+</form>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "employer/all_helpers.html" %}
+
+{% block content %}
+{% set message = get_flashed_messages(with_categories=True) %}
+                {% if message %}
+                  {% for msg , cat in message %}
+                    {% if cat == 'errormsg' %}
+                      <div class="alert alert-danger">{{msg}}</div>
+                    {% else %}
+                      <div class="alert alert-success">{{msg}}</div>
+                    {% endif %}
+                  {% endfor %}
+                {% endif %}
+                
+<div class="container mt-5">
+    <h2>Wallet Balance</h2>
+    <p>Your current wallet balance is: {{ employer_deets.employer_walletbalance }}</p>
+    <form method="POST" action="{{ url_for('employer_wallet') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="mb-3">
+            <label for="amount" class="form-label">Withdrawal Amount</label>
+            <input type="text" name="amount" id="amount" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit Withdrawal</button>
+        <a href="/update_bankdetails/" class="btn btn-secondary">Update bank details</a>
+    </form>
+  </div>
+{% endblock %}

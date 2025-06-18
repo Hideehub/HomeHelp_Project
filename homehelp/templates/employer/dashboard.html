@@ -1,0 +1,87 @@
+{% extends "employer/all_helpers.html" %}
+
+{% block content %}
+
+  {% set message = get_flashed_messages(with_categories=True) %}
+    {% if message %}
+      {% for msg , cat in message %}
+        {% if cat == 'errormsg' %}
+          <div class="alert alert-danger mt-3">{{msg}}</div>
+        {% else %}
+          <div class="alert alert-success">{{msg}}</div>
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+
+    <div class="container mt-5">
+        <h2>Employer Dashboard</h2>
+        <h4>Your Job Postings</h4>
+        {% if job_postings %}
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Job Title</th>
+                <th>Description</th>
+                <th>Worker Hired</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for job in job_postings %}
+                <tr>
+                  <td>
+                    {% if job.category %}
+                        {{job.category.cat_name}}
+                    {% else %}
+                        Not assigned
+                    {% endif %}
+                  </td>
+                  <td>{{ job.post_description }}</td>
+                  <td>
+                    {% if job.worker %}
+                        {{ job.worker.worker_fname + " " + job.worker.worker_lname }}
+                    {% else %}
+                        Not assigned
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if job.post_status == '1' %}
+                      Accepted
+                      <form method="POST" action="{{ url_for('complete_job', post_id=job.post_id) }}" style="display:inline;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn-sm btn-warning">Mark as Completed</button>
+                    </form>
+                    {% elif job.post_status == '2' %}
+                      Rejected
+                    {% elif job.post_status == '3' %}
+                      Completed
+                      {% if job.reviews|length > 0 %}
+                        <span class="badge bg-info">Reviewed</span>
+                      {% else %}
+                        <a href="{{ url_for('review_worker', post_id=job.post_id) }}" class="btn btn-sm btn-primary">Review Worker</a>
+                      {% endif %}
+                    {% elif job.post_status == '4' %}
+                      <span class="badge bg-secondary">Cancelled</span>
+                    {% else %}
+                      Pending
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if job.post_status %}
+                      <form method="POST" action="{{ url_for('cancel_job', post_id=job.post_id) }}" style="display:inline;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn-danger btn-sm">Cancel Hire</button>
+                      </form>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <p>No job postings yet.</p>
+        {% endif %}
+      </div>
+      
+{% endblock %}

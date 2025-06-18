@@ -1,0 +1,144 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HomeHelp</title>
+    <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/css/main.css" rel="stylesheet">
+</head>
+<body class="">
+    <header>
+        <!-- Fixed navbar -->
+        <nav class="navbar navbar-expand-md fixed-top custom-color">
+          <div class="container">
+            <a class="navbar-brand" href="#" style="color: black; font-size: 28px;">HomeHelp</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+              <ul class="navbar-nav mx-auto mb-2 mb-md-0">
+                <li class="nav-item">
+                  <a class="nav-link active" aria-current="page" href="/">Home</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="/about/">About</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="/helper/request_withdrawal/"><i class="fa-solid fa-wallet">Wallet</i></a>
+                </li>
+              </ul>
+              <div class="d-flex" role="search">
+                <a href="/helper/profile/" class="btn btn-dark btn-sm" type="submit">Hi {{worker_deets.worker_lname}} {{worker_deets.worker_fname}}</a>
+                <a href="/helper/logout/" class="btn btn-dark btn-sm ms-1">Logout</a>
+              </div>
+            </div>
+          </div>
+        </nav>
+      </header>
+
+
+      <div class="container-fluid ms-0 ps-0 mt-5 ">
+        <div class="row">
+          <div class="col-md-3 ">
+            <div class="d-flex flex-column flex-shrink-0 p-3 custom-color" style="width: 280px;height: 100vh;">
+              <ul class="nav nav-pills flex-column mb-auto">
+                <li>
+                  </a>
+                </li>
+                <li>
+                  <a href="/helper/dashboard/" class="nav-link text-white">
+                    <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#grid"></use></svg>
+                    Dashboard
+                  </a>
+                </li>
+                <li>
+                  <a href="/helper/profile/" class="nav-link text-white">
+                    <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#speedometer2"></use></svg>
+                    Profile
+                  </a>
+                </li>
+              </ul>
+              <hr>
+              <div class="dropdown">
+                <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                  {% for experience in experiences %}
+                    {% if experience.exp_picture == None or experience.exp_picture == '' %}
+                      <img src="/static/images/icons/helps.png" alt="" width="32" height="32" class="rounded-circle me-2">
+                    {% else %}
+                    <img src="/static/images/uploads/{{experience.exp_picture}}" alt="" width="32" height="32" class="rounded-circle me-2">
+                    {% endif %}
+                  {% endfor %}
+                  <strong>{{worker_deets.worker_lname}}</strong>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
+                  <li><a class="dropdown-item" href="#">New project...</a></li>
+                  <li><a class="dropdown-item" href="#">Settings</a></li>
+                  <li><a class="dropdown-item" href="#">Profile</a></li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li><a class="dropdown-item" href="#">Sign out</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-9 p-4">
+            {% block content %}
+            {% set message = get_flashed_messages(with_categories=True) %}
+            {% if message %}
+              {% for msg , cat in message %}
+                {% if cat == 'errormsg' %}
+                  <div class="alert alert-danger">{{msg}}</div>
+                {% else %}
+                  <div class="alert alert-success">{{msg}}</div>
+                {% endif %}
+              {% endfor %}
+            {% endif %}
+
+            <div class="container mt-5">
+              <h2>Welcome, {{ worker_deets.worker_fname }}!</h2>
+              <h4>Your Job Assignments</h4>
+              
+              {% if assigned_jobs %}
+                  <ul class="list-group">
+                      {% for job in assigned_jobs %}
+                          <li class="list-group-item">
+                              <p><strong>Job Description:</strong> {{ job.post_description }}</p>
+                              {% if job.post_status == '0' %}
+                                <form method="POST" action="/update/jobstatus/">
+                                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                  <input type="hidden" name="post_id" value="{{ job.post_id }}">
+                                  <button type="submit" name="action" value="1" class="btn btn-success">Accept</button>
+                                  <button type="submit" name="action" value="2" class="btn btn-danger">Reject</button>
+                                </form>
+                              {% elif job.post_status == '1' %}
+                                <span class="badge bg-success">Accepted</span>
+                              {% elif job.post_status == '2' %}
+                                <span class="badge bg-danger">Rejected</span>
+                              {% elif job.post_status == '3' %}
+                                <span class="badge bg-info">Job Completed</span>
+                              {% elif job.post_status == '4' %}
+                                <span class="badge bg-secondary">Cancelled</span>
+                              {% endif %}
+                          </li>
+                      {% endfor %}
+                  </ul>
+              {% else %}
+                  <p>No job assignments yet.</p>
+              {% endif %}
+            </div>
+            
+            {% endblock %}
+          </div>
+        </div>
+      </div>
+      </div>
+
+
+
+    
+<script src="/static/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/static/jquery-3.7.1.min.js"></script>
+
+</body>
+</html>

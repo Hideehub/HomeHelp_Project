@@ -1,0 +1,36 @@
+{% extends "employer/all_helpers.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Review Worker</h2>
+    <p>
+      You are reviewing: 
+      <strong>{{ job.worker.worker_fname }} {{ job.worker.worker_lname }}</strong>
+    </p>
+    <form method="POST" action="{{ url_for('review_worker', post_id=job.post_id) }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <!-- Rating Select -->
+      <div class="mb-3">
+        <label for="rating" class="form-label">Rating:</label>
+        <select name="rating" id="rating" class="form-select" required>
+          <option value="">-- Select Rating --</option>
+          <option value="1">1 - Very Poor</option>
+          <option value="2">2 - Poor</option>
+          <option value="3">3 - Average</option>
+          <option value="4">4 - Good</option>
+          <option value="5">5 - Excellent</option>
+        </select>
+      </div>
+      <!-- Review Textarea -->
+      <div class="mb-3">
+        <label for="review_text" class="form-label">Review:</label>
+        <textarea name="review_text" id="review_text" rows="5" class="form-control" placeholder="Enter your review here..." required></textarea>
+      </div>
+      <!-- Hidden field to pass job id (optional if already in URL) -->
+      <input type="hidden" name="job_id" value="{{ job.post_id }}">
+      
+      <button type="submit" class="btn btn-primary">Submit Review</button>
+      <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Cancel</a>
+    </form>
+  </div>
+    {% endblock %}

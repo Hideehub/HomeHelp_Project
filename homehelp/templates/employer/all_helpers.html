@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/fontawesome/css/all.css">
+    <link rel="stylesheet" href="/static/animate.min.css">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href="/static/css/main.css" rel="stylesheet">
+</head>
+    <title>Dashboard</title>
+    <style>
+        .bg{
+            background-color: teal;
+        }
+        .image{
+            width: 50px;
+            height:50px;
+            border-radius:100%;
+        }
+        .head h1{
+            padding-left: 50px;
+        }
+        .user{
+            padding-left: 300px;
+        }.pic{
+            width: 100px;
+            height:100px;
+            border-radius:50%
+        }
+        .helper_bg{
+            background-color:rgb(245, 247, 246);
+            min-height: 600px;
+        }
+    
+        .cancel{
+            padding-left: 1500px;
+        }
+        .padbutn{
+            padding-left: 50px;
+        }
+        .pic1{
+            width:50px;
+            height:50px;
+            border-radius: 50%;
+        }
+        .card{
+          border-radius: 8px;
+          box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+          overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+        <header>
+            <!-- Fixed navbar -->
+            <nav class="navbar navbar-expand-md fixed-top custom-color">
+              <div class="container">
+                <a class="navbar-brand" href="#" style="color: black; font-size: 28px;">HomeHelp</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarCollapse">
+                  <ul class="navbar-nav mx-auto mb-2 mb-md-0">
+                    <li class="nav-item">
+                      <a class="nav-link active" aria-current="page" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="/about/">About</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="/employer/wallet/">Wallet</a>
+                    </li>
+                  </ul>
+                  <div class="d-flex" role="search">
+                    <a href="/employer/dashboard/" class="btn btn-dark btn-sm" type="submit">Hi {{employer_deets.employer_name}}</a>
+                    <a href="/logout/" class="btn btn-dark btn-sm ms-1">Logout</a>
+                  </div>
+                </div>
+              </div>
+            </nav>
+          </header>
+
+
+          <div class="container-fluid ms-0 ps-0 mt-5 ">
+            <div class="row">
+              <div class="col-md-3 ">
+                <div class="d-flex flex-column flex-shrink-0 p-3 custom-color" style="width: 280px;height: 100vh;">
+                  <ul class="nav nav-pills flex-column mb-auto">
+                    <li>
+                      <a href="/all/helpers/" class="nav-link text-white">
+                        <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#speedometer2"></use></svg>
+                        All Helpers
+                      </a>
+                    </li>
+                    <li>
+                      <a href="/employer/dashboard/" class="nav-link text-white">
+                        <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#speedometer2"></use></svg>
+                        Dashboard
+                      </a>
+                    </li>
+                    <li>
+                      <a href="/employer/profile/" class="nav-link text-white">
+                        <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#speedometer2"></use></svg>
+                        Profile
+                      </a>
+                    </li>
+          
+                  </ul>
+                  <hr>
+                  <div class="dropdown">
+                    <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                      {% if employer_deets.employer_picture == None or employer_deets.employer_picture=='' %}
+                        <img src="/static/images/icons/helps.png" alt="" width="32" height="32" class="rounded-circle me-2">
+                      {% else %}
+                        <img src="/static/images/uploads/{{employer_deets.employer_picture }}" alt="" width="32" height="32" class="rounded-circle me-2">
+                      {% endif %}
+                      <strong>{{employer_deets.employer_name}}</strong>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
+                      <li><a class="dropdown-item" href="#">New project...</a></li>
+                      <li><a class="dropdown-item" href="#">Settings</a></li>
+                      <li><a class="dropdown-item" href="#">Profile</a></li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li><a class="dropdown-item" href="#">Sign out</a></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+    
+              <div class="col-md-9 p-4">
+                {% block content %}
+
+
+              {% set message = get_flashed_messages(with_categories=True) %}
+              {% if message %}
+                {% for msg , cat in message %}
+                  {% if cat == 'errormsg' %}
+                    <div class="alert alert-danger mt-3">{{msg}}</div>
+                  {% else %}
+                    <div class="alert alert-success">{{msg}}</div>
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
+                <!-- search  -->
+
+
+                <!-- display -->
+                <div class="container-fluid helper_bg">
+                  {% if worker_data %}
+                  <div class="row justify-content-between wrap">
+                      <h2 class="pt-4 p-2">All Helpers</h2>
+                      {% for worker in worker_data %}
+                      <div class="col-md-4 mb-4 mt-5 p-5 bg-light card">
+                          {% for experience in worker.experiences %}
+                          <div class="helper mb-3 text-center">
+                            <div class="helper mb-3 text-center">
+                              {% if not experience.exp_picture %}
+                              <img src="/static/images/icons/helps.png" alt="helper pic" class="pic">
+                              {% else %}
+                              <img src="/static/images/uploads/{{ experience.exp_picture }}" alt="helper pic" class="pic">
+                              {% endif %}
+                            </div>
+                          
+                          </div>
+                            {% endfor %}
+                          <h2 class="text-center">{{ worker.worker.worker_fname }} {{ worker.worker.worker_lname }}</h2>
+
+                          <div class="text-center pt-2" style="color:teal">
+                            <p>{{worker.state}}</p>
+                            <p>{{worker.category.cat_name}}</p>
+                          </div>
+                          <div class="text-center mt-3">
+                            <!-- Button trigger modal -->
+                            <button 
+                                type="button" 
+                                class="btn btn-success mt-3 text-center view-profile-btn"
+                                data-img="{% if worker.experiences and worker.experiences[0].exp_picture %}/static/images/uploads/{{ worker.experiences[0].exp_picture }}{% else %}/static/images/icons/helps.png{% endif %}"
+                                data-name="{{ worker.worker.worker_fname }} {{ worker.worker.worker_lname }}"
+                                data-state="{{ worker.state }}"
+                                data-price="{{ worker.worker.worker_price }}"
+                                data-category="{{ worker.category.cat_name }}"
+                                data-experience="{{ worker.experiences[0].exp_jobtitle if worker.experiences else 'No experience listed' }}"
+                                data-about="{{ worker.experiences[0].exp_about if worker.experiences else 'No information available' }}"
+                                data-years="{{ worker.experiences[0].exp_years if worker.experiences else 'Not specified' }}"
+                                data-review="{{ worker.reviews[0].review_comment if worker.reviews else 'No reviews yet' }}"
+                                data-email="{{ worker.worker.worker_email }}"
+                                data-id ="{{ worker.worker.worker_id}}"
+                                data-catid = "{{ worker.category.cat_id}}"
+                            >   
+                                View Profile
+                            </button>
+                        </div>
+                      </div>
+                      {% endfor %}
+                  </div>
+                  {% endif %}
+              </div>
+              
+
+
+            <!-- Modal -->
+              <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-scrollable modal-lg">
+                    <div class="modal-content">
+                        <button type="button" class="btn-close cancel" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div>
+                                        <img id="modal-worker-img" alt="helper" class="pic">
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <h4><strong>Name: </strong> <span id="modal-worker-name"></span></h4>
+                                    <p><strong>Price:</strong> <span id="modal-worker-price"></span> (Service fee)</p>
+                                  </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-8 offset-md-1 pt-3">
+                                    <h3>About Me</h3>
+                                    <p id="modal-worker-about"></p>
+                                    <h3>Location</h3>
+                                    <p id="modal-worker-state"></p>
+                                    <h3>Skilled Profession</h3>
+                                    <p id="modal-worker-category"></p>
+                                    <h3>Years of Practice</h3>
+                                    <p id="modal-worker-years"></p>
+                                </div>
+                            </div>
+                            <div class="row">
+                              <h3>Reviews</h3>
+                              <div class="col-md" id="modal-worker-review">
+                              </div>
+                          </div>
+
+                          {% if worker_data %}
+                              <div class="text-center">
+                              <a id="modal-hire-now-btn" class="btn btn-success hire-now-btn" href="#">
+                                  Hire Now
+                              </a>
+                              </div>
+                          {% endif %}
+                      
+                            </div>
+                          </div>
+                      </div>
+                    </div>
+
+
+                {% endblock %}
+              </div>
+            </div>
+          </div>
+
+       
+
+          <div class="container">
+            <footer class="py-3 my-4">
+              <ul class="nav justify-content-center border-bottom pb-3 mb-3">
+                <li class="nav-item"><a href="/" class="nav-link px-2 text-body-secondary">Home</a></li>
+                <li class="nav-item"><a href="/about/" class="nav-link px-2 text-body-secondary">About</a></li>
+              </ul>
+              <p class="text-center text-body-secondary">© 2024 HomeHelp</p>
+            </footer>
+          </div>
+    
+  
+    <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/static/jquery-3.7.1.min.js"></script>
+    <script>
+      $(document).ready(function () {
+    $(".view-profile-btn").click(function () {
+        // Extract worker data from data attributes
+        const workerImg = $(this).data("img") || "/static/images/icons/helps.png";
+        const workerName = $(this).data("name") || "Not Available";
+        const workerPrice = $(this).data("price") || "Not Available";
+        const workerEmail = $(this).data("email") || "Not Available";
+        const workerState = $(this).data("state") || "Not Specified";
+        const workerCategory = $(this).data("category") || "Not Specified";
+        const workerExperience = $(this).data("experience") || "No experience listed";
+        const workerAbout = $(this).data("about") || "No information available";
+        const workerYears = $(this).data("years") || "Not specified";
+        const workerReview = $(this).data("review") || "No reviews yet";
+        const workerId = $(this).data('id') || "Not Specified";
+        const categoryId = $(this).data('catid') || "Not Specified"; 
+        
+        $("#modal-worker-img").attr("src", workerImg);
+        $("#modal-worker-name").text(workerName);
+        $("#modal-worker-price").text(workerPrice);
+        $("#modal-worker-state").text(workerState);
+        $("#modal-worker-category").text(workerCategory);
+        $("#modal-worker-experience").text(workerExperience);
+        $("#modal-worker-about").text(workerAbout);
+        $("#modal-worker-years").text(workerYears);
+        $("#modal-worker-review").text(workerReview);
+
+        
+         $("#modal-hire-now-btn")
+            .data("worker-email", workerEmail)
+            .data("worker-id", workerId)
+            .data("worker-cat", categoryId)
+            .data("worker-name", workerName)
+            .attr("href", "/payment/" + workerId);
+
+        $("#exampleModal").modal("show");
+    });
+
+});
+
+
+  </script>
+  
+</body>
+</html>

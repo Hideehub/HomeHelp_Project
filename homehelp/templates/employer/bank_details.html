@@ -1,0 +1,39 @@
+{% extends "employer/all_helpers.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Update Bank Details</h2>
+    <p class="text-danger">Fill out these fields carefully!</p>
+    <form method="POST" action="{{ url_for('update_bankdetails') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="mb-3">
+        <label for="bank_account_name" class="form-label">Account Name</label>
+        <input type="text" name="bank_account_name" id="bank_account_name" class="form-control" required
+               value="{{ recipient.bank_account_name if recipient else '' }}">
+      </div>
+      <div class="mb-3">
+        <label for="bank_account_number" class="form-label">Account Number</label>
+        <input type="text" name="bank_account_number" id="bank_account_number" class="form-control" required
+               value="{{ recipient.bank_account_number if recipient else '' }}">
+      </div>
+      <div class="mb-3">
+        <label for="bank_code" class="form-label">Select Bank</label>
+        <select name="bank_code" id="bank_code" class="form-select" required>
+            <option value="">-- Select Bank --</option>
+            <option value="044">Access Bank</option>
+            <option value="058">GTBank</option>
+            <option value="011">First Bank</option>
+            <option value="033">UBA</option>
+            <option value="057">Zenith Bank</option>
+            <option value="032">Union Bank</option>
+            <option value="221">Stanbic IBTC Bank</option>
+            <option value="035">Wema Bank</option>
+            <option value="082">Keystone Bank</option>
+            <option value="076">Polaris Bank</option>
+            <option value="070">Fidelity Bank</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary">Update Details</button>
+    </form>
+</div>
+{% endblock %}

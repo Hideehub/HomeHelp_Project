@@ -1,0 +1,31 @@
+{% extends "employer/all_helpers.html"%}
+
+{% block content %}
+<h1>Make payment to promote your business</h1>
+<p>Click on confirmation button when you are ready to pay...</p>
+
+{% set message = get_flashed_messages(with_categories=True) %}
+{% if message %}
+  {% for msg , cat in message %}
+    {% if cat == 'errormsg' %}
+      <div class="alert alert-danger">{{msg}}</div>
+    {% else %}
+      <div class="alert alert-success">{{msg}}</div>
+    {% endif %}
+  {% endfor %}
+{% endif %}
+
+<form action="/payment/{{ worker.worker_id }}" method="post">
+
+  <div class="mb-3">
+      <input type="hidden" value="{{ csrf_token()}}" name="csrf_token">
+      <p> Amount &#8358; {{ worker.worker_price }}</p>
+  </div>
+ 
+  <div class="mb-3">
+      <button class="btn btn-secondary noround mx-3" type="button" onclick="document.location.href='/dashboard/'">Cancel</button>
+      <button class="btn btn-danger noround">Continue</button>
+  </div>
+</form>
+
+{% endblock %}

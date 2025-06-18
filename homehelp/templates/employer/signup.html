@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+    <title>Log in to your account - HomeHelp</title>
+    <style>
+      *{
+	      padding:0px;
+	      margin:0px;
+	      box-sizing:border-box;
+        font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+       }
+
+       .bg{
+        background-image: url(/static/images/mountingpic.jpg);
+        min-height: 700px;
+        background-size: cover;
+        background-position: 3%;
+       }
+
+       .pad{
+        padding-left: 100px;
+       }
+
+       .bord{
+        border:1px, solid white;
+        background-color: white;
+        align-items: center;
+        margin-top: 200px;
+        border-radius: 20px;
+       }
+
+        .overlay h1{
+            font-size: 60px;
+        }
+
+        .logo{
+          font-size: 40px;
+        }
+        
+        .style-helps{
+            padding-right: 100px;
+            border: 1px solid teal;
+            color: teal;
+            border-radius: 5px;
+            font-size: 18px;
+        }
+
+        .style-link{
+          padding-left: 5px !important;
+          font-size: 18px;
+        }
+        
+
+       #signin{
+        box-shadow: none;
+        background-color: transparent;
+       }
+       #login{
+        box-shadow: none;
+        background-color: transparent;
+       }
+       #create{
+        box-shadow: none;
+        background-color: transparent;
+       }
+       #log{
+        box-shadow: none;
+        background-color: transparent;
+       }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg ">
+        <div class="container-fluid">
+          <div class="pad">
+            <a class="navbar-brand logo" href="#">HomeHelp</a>
+          </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav ms-auto links">
+              <a class="nav-link style-link" href="/">Home</a>
+              <a class="nav-link style-helps" href="#">Become an Helper</a>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <div class="container-fluid bg">
+          <div class="row pt-5">
+            <div class="col-md-6 offset-md-3 bord p-3 ">
+              <h1 class="text-center mt-3">HomeHelp</h1>
+              {% set message = get_flashed_messages(with_categories=True) %}
+                {% if message %}
+                  {% for msg , cat in message %}
+                    {% if cat == 'errormsg' %}
+                      <div class="alert alert-danger">{{msg}}</div>
+                    {% else %}
+                      <div class="alert alert-success">{{msg}}</div>
+                    {% endif %}
+                  {% endfor %}
+                {% endif %}
+                <div class="d-block mt-3" id="signinform">
+                    <form action="/signup/" method="post" class="mt-3" novalidate>
+                      {{ signinform.csrf_token() }}
+                      
+                      {{ signinform.name(placeholder='Full Name',class_='form-control mb-3')}}
+                   
+                       {{ signinform.email(placeholder='Email Address', class_='form-control mb-3')}}
+
+                      {{signinform.gender(class_='form-select mb-3')}}
+                      
+                      {{ signinform.phone(placeholder='Phone Number', class_='form-control mb-3')}}
+                     
+                      {{ signinform.password(placeholder='Password', class_='form-control mb-3')}}
+                      {{ signinform.cpassword(placeholder='Confirm Password', class_='form-control mb-3')}}
+                      
+                     
+                      <div class="mb-3">
+                        {{ signinform.state(id="state", class_="form-select mb-3")}}
+                      </div>
+                   
+
+                      {{ signinform.address(placeholder='Enter your address', class_='form-control mb-3')}}
+                     
+                      
+                      {{ signinform.send(class_='btn btn-success col-md-12 text-light bg-success rounded-pill')}}
+                     
+                    </form>
+                    <p class="mt-3 text-center"> Already have an account? <a href="/login/"  class="text-decoration-none text-success"> Login</a> </p>
+                   
+                  </div>
+                
+            </div>
+          </div>
+      </div>
+
+</body>
+</html>

@@ -1,0 +1,72 @@
+{% extends "employer/all_helpers.html" %}
+
+{% block content %}
+
+  <h1>Profile Details</h1>
+  
+  {% set message = get_flashed_messages(with_categories=True) %}
+                {% if message %}
+                  {% for msg , cat in message %}
+                    {% if cat == 'errormsg' %}
+                      <div class="alert alert-danger mt-3">{{msg}}</div>
+                    {% else %}
+                      <div class="alert alert-success">{{msg}}</div>
+                    {% endif %}
+                  {% endfor %}
+                {% endif %}
+
+  <div class="row mt-5">
+    <div class="col-md-4">
+      {% if employer_deets.employer_picture == None or employer_deets.employer_picture == '' %}
+        <img src="/static/images/icons/helps.png" class="img-fluid img-thumbnail" width="100%" height="225" role="img">
+      {% else %}
+      <img src="/static/images/uploads/{{employer_deets.employer_picture}}" class="img-fluid img-thumbnail" width="100%" height="225" role="img">
+      {% endif %}
+    </div>
+    <div class="col-md-8">
+      <div class="bg-body-tertiary pt-3 pb-3 px-5">
+        <strong>Name</strong>
+        <h2>{{employer_deets.employer_name}}</h2>
+        <strong>Email</strong>
+        <p>{{employer_deets.employer_email}}</p>
+        <strong>Address</strong>
+        <p>{{employer_deets.employer_address}}</p>
+        <strong>Phone</strong>
+        <p>{{employer_deets.employer_phoneno}}</p>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="row">
+    <h2 class="mt-2">update your Profile</h2>
+    <div class="col-md-12">
+        <form action="/profile/{{employer_deets.employer_id}}/update/" method="post" class="mt-3" enctype="multipart/form-data"> 
+          <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
+            <div class="mb-2">
+                <label for="">Name</label><br>
+                <input type="text" name="name" id="" value="{{employer_deets.employer_name}}" placeholder="Fullname" class="form-control">
+            </div>
+            <div class="mb-2">
+                <label for="">Phone</label><br>
+                <input type="number" name="phone" id="" value="{{employer_deets.employer_phoneno}}" placeholder="Phone Number" class="form-control">
+            </div>
+            <div class="mb-2">
+              <label for="">Address</label><br>
+              <textarea name="address" id=""  placeholder="Address" class="form-control">{{employer_deets.employer_address}}
+              </textarea>
+            </div>
+            <div class="mb-2">
+              <label for="">Image</label><br>
+              <input type="file" name="employer_picture" id="" class="form-control">
+            </div>
+            <div class="mb-2">
+              <button class="btn btn-success">Update</button>
+            </div>
+        </form>
+
+    </div>
+  </div>
+  
+  
+{% endblock %}

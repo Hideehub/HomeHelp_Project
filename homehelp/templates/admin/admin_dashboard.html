@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/fontawesome/css/all.css">
+    <link rel="stylesheet" href="/static/animate.min.css">
+    <title>Admin</title>
+    <style>
+        .bg{
+            background-color: teal;
+            min-height:800px;
+        }
+        .side-logout{
+            padding-top: 100px;
+        }
+        .nav-area, a{
+            font-size: 18px;
+        }
+        .nav-area, a:hover{
+            color:darkgreen;
+        }
+        .style-metrics{
+            background-color: beige;
+            min-height: inherit;
+            border-radius: 10px;
+        }
+        .style-metrics1{
+            background-color: rgba(76, 124, 124, 0.288);
+            min-height: inherit;
+            border-radius: 10px;
+        }
+        .style-metrics2{
+            background-color:mintcream;
+            min-height: inherit;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-2 bg">
+                <h3 class="text-center text-light pt-3">HomeHelp</h3>
+                <p class="text-center text-light">Management Dashboard</p>
+                <hr>
+                <nav class="col-md nav flex-column">
+                    <p class="text-light p-2">Main Menu</p>
+                    <div class="d-flex p-3 nav-area">
+                        <i class="fa-solid fa-bars pt-3 text-light"></i>
+                        <a class="nav-link active text-light" aria-current="page" href="/admin/dashboard/">Dashboard</a>
+                    </div>
+                    <div class="col-md d-flex p-3 nav-area">
+                        <i class="fa-solid fa-users text-light pt-3"></i>
+                        <a class="nav-link text-light" href="/admin/reviews/">Reviews</a>
+                    </div>
+                    <div class="col-md d-flex p-3 nav-area">
+                        <i class="fa-solid fa-money-bill text-light pt-3"></i>
+                        <a class="nav-link text-light" href="/admin/payments/">Payments</a>
+                    </div>
+                    <div class="d-flex side-logout p-3 nav-area"> 
+                        <i class="fa-solid fa-right-from-bracket pt-3 text-light"></i>
+                        <a class="nav-link text-light" href="/admin/logout/">logout</a>
+                    </div>
+                </nav>
+            </div>
+
+            <div class="col-md-10">
+                <nav class="navbar navbar-expand-lg bg-body-light">
+                    <div class="container-fluid">
+                    {% for ad in admin %}
+                      <p class="navbar-brand" href="#">Welcome Back, {{ad.admin_username}}</p>
+                    {% endfor %}
+                      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                      </button>
+                      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        
+                    </div>
+                  </nav>
+
+                  <div class="row justify-content-around">
+                    <h2 class="mt-5 p-2">Key metrics</h2>
+                    <div class="col-md-4 ">
+                        <div class="style-metrics1 pt-5 shadow">
+                            <h4 class="text-center ">Total Users:</h4>
+                            <h4 class="text-center pb-5">{{total_users}}</h4>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="style-metrics2 pt-5 shadow">
+                            <h4 class="text-center">Active Users:</h4>
+                            <h4 class="text-center pb-5">{{total_active_users}}</h4>
+                        </div>
+                    </div>
+    
+                  </div>
+        {% block content %}
+                  <div class="container">
+                    <h3 class="mt-5">All Workers</h3>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for worker in workers %}
+                                <tr>
+                                    <td>{{worker.worker_id}}</td>
+                                    <td>{{ worker.worker_fname }} {{ worker.worker_lname }}</td>
+                                    <td>{{ worker.worker_email }}</td>
+                                    <td>
+                                        <span class="status-badge badge {{ 'bg-success' if worker.worker_status == 'active' else 'bg-danger' }}">
+                                            {{ worker.worker_status }}
+                                        </span>
+                                    </td>
+                                            
+                                <td>
+                                    <button 
+                                        class="btn btn-sm toggle-status-btn {{ 'btn-danger' if worker.worker_status == 'active' else 'btn-success' }}" 
+                                        data-id="{{ worker.worker_id }}"
+                                        data-status="{{ 'inactive' if worker.worker_status == 'active' else 'active' }}">
+                                        {{ 'Deactivate' if worker.worker_status == 'active' else 'Activate' }}
+                                    </button>
+                                </td>
+                        
+            
+                
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                
+                    <h3 class="mt-5">All Employers</h3>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for employer in employers %}
+                                <tr>
+                                    <td>{{ employer.employer_id }}</td>
+                                    <td>{{ employer.employer_name }}</td>
+                                    <td>{{ employer.employer_email }}</td>
+                                    <td>
+                                        <span class="status-badge badge {{ 'bg-success' if employer.employer_status == 'active' else 'bg-danger' }}">
+                                            {{ employer.employer_status }}
+                                        </span>
+                                    </td>
+                                            
+                                <td>
+                                    <!-- Toggle Status Button -->
+                                    <button 
+                                        class="btn btn-sm toggle-btn {{ 'btn-danger' if employer.employer_status == 'active' else 'btn-success' }}" 
+                                        data-id="{{ employer.employer_id }}"
+                                        data-status="{{ 'inactive' if employer.employer_status == 'active' else 'active' }}">
+                                        {{ 'Deactivate' if employer.employer_status == 'active' else 'Activate' }}
+                                    </button>
+                                </td>
+                        
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                
+
+                </div>
+            {% endblock %}
+                
+                
+            </div>
+            
+            
+        </div>
+
+    </div>
+    <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/static/jquery-3.7.1.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Handle Toggle Status Button Click
+            $(".toggle-status-btn").click(function () {
+                const button = $(this);
+                const workerId = button.data("id");
+                const newStatus = button.data("status");
+                const csrfToken = "{{ csrf_token() }}";
+
+                console.log("Sending Request:", { worker_id: workerId, worker_status: newStatus });
+
+                // Send AJAX Request to Change Status
+                $.ajax({
+                    url: "/admin/change-status/",
+                    method: "POST",
+                    contentType: "application/json",
+                    headers: {
+                        "X-CSRFToken": csrfToken  
+                     },
+                    data: JSON.stringify({
+                        worker_id: workerId,
+                        worker_status: newStatus
+                    }),
+                    success: function (response) {
+                        const row = $("#worker-" + workerId);
+                        const badge = row.find(".status-badge");
+
+        
+                        if (newStatus === "active") {
+                            badge.removeClass("bg-danger").addClass("bg-success").text("Active");
+                            button.removeClass("btn-success").addClass("btn-danger").text("Deactivate");
+                            button.data("status", "inactive");
+                        } else {
+                            badge.removeClass("bg-success").addClass("bg-danger").text("Inactive");
+                            button.removeClass("btn-danger").addClass("btn-success").text("Activate");
+                            button.data("status", "active");
+                        }
+
+                        alert(response.message);
+                    },
+                    error: function (xhr) {
+                        alert(xhr.responseJSON.message || "An error occurred");
+                    }
+                });
+            });
+
+
+
+            $(".toggle-btn").click(function () {
+                const button = $(this);
+                const employerId = button.data("id");
+                const newStatus = button.data("status");
+                const csrfToken = "{{ csrf_token() }}";
+
+                console.log("Sending Request:", { employer_id: employerId, employer_status: newStatus });
+
+                $.ajax({
+                    url: "/admin/changestatus/",
+                    method: "POST",
+                    contentType: "application/json",
+                    headers: {
+                        "X-CSRFToken": csrfToken  
+                     },
+                    data: JSON.stringify({
+                        employer_id: employerId,
+                        employer_status: newStatus
+                    }),
+                    success: function (response) {
+                        const row = $("#worker-" + employerId);
+                        const badge = row.find(".status-badge");
+
+                        if (newStatus === "active") {
+                            badge.removeClass("bg-danger").addClass("bg-success").text("Active");
+                            button.removeClass("btn-success").addClass("btn-danger").text("Deactivate");
+                            button.data("status", "inactive");
+                        } else {
+                            badge.removeClass("bg-success").addClass("bg-danger").text("Inactive");
+                            button.removeClass("btn-danger").addClass("btn-success").text("Activate");
+                            button.data("status", "active");
+                        }
+
+                        alert(response.message);
+                    },
+                    error: function (xhr) {
+                        alert(xhr.responseJSON.message || "An error occurred");
+                    }
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>
