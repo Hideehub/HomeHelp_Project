@@ -44,7 +44,7 @@ def helper_register():
                 flash('Password mismatch, please ensure you enter the password correctly')
                 return redirect('/helper/register/')
             else:
-                hashed_password = generate_password_hash(password)
+                hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
                 new_worker = Worker(
                     worker_fname=fname,
                     worker_lname=lname,
