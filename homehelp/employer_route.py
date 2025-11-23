@@ -65,7 +65,7 @@ def signup():
             flash('errormsg','Password mismatch, please ensure you enter the password correctly')
             return render_template('employer/signup.html', signinform=signinform)
         
-        hashed_password = generate_password_hash(signinform.password.data)
+        hashed_password = generate_password_hash(signinform.password.data, method='pbkdf2:sha256')
         new_employer = Employer(
             employer_name=signinform.name.data,
             employer_password=hashed_password,
@@ -82,6 +82,7 @@ def signup():
         except Exception as e:
             db.session.rollback()
             flash('errormsg', 'An error occurred while creating your account. Please try again.')
+            print("SIGNUP ERROR:", e)
             return render_template('employer/signup.html', signinform=signinform)
         
         flash('success', 'An account has been created for you!')
@@ -91,7 +92,6 @@ def signup():
         for error in errors:
             flash(f"Error in {getattr(signinform, field).label.text}: {error}", 'errormsg')
     return render_template('employer/signup.html', signinform=signinform)
-
 
     
 
