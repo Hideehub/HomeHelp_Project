@@ -16,7 +16,7 @@ def create_app():
     app = Flask(__name__,instance_relative_config=True)
 
     #to load all the config inside the file
-    # app.config.from_pyfile("config.py")
+    app.config.from_pyfile("config.py")
     app.config.from_object(config.BaseConfig)
 
     #db = SQLAlchemy(app)
