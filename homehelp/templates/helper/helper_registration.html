@@ -65,25 +65,88 @@
 </head>
 <body>
     
-    <nav class="navbar navbar-expand-lg ">
-        <div class="container-fluid">
-          <div class="pad">
-            <a class="navbar-brand logo" href="#">HomeHelp</a>
-          </div>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-            <div class="navbar-nav mx-auto padd links">
-                <a class="nav-link style-link" href="/helper/login/">Login</a>
-            </div>
-          </div>
-        </div>
-      </nav>
-      <hr>
+     <nav class="navbar navbar-expand-lg shadow-sm">
+  <div class="container">
+
+    <!-- Logo -->
+    <a class="navbar-brand logo" href="/">HomeHelp</a>
+
+    <!-- Toggler -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+      data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Links -->
+    <div class="collapse navbar-collapse" id="navbarNav">
+
+      <!-- RIGHT SIDE (everything aligned together) -->
+      <ul class="navbar-nav ms-auto align-items-center gap-3">
+
+        <!-- About -->
+        <li class="nav-item">
+          <a class="nav-link" href="/about/">About</a>
+        </li>
+
+        {% if employer_deets %}
+
+          <li class="nav-item">
+            <span class="nav-link">
+              Hi {{ employer_deets.employer_name }}
+            </span>
+          </li>
+
+          <li class="nav-item">
+            <a class="btn btn-outline-dark btn-sm" href="/logout/">Logout</a>
+          </li>
+
+        {% elif worker_deets %}
+
+          <li class="nav-item">
+            <span class="nav-link">
+              Hi {{ worker_deets.worker_fname }}
+            </span>
+          </li>
+
+          <li class="nav-item">
+            <a class="btn btn-outline-dark btn-sm" href="/helper/logout/">Logout</a>
+          </li>
+
+        {% else %}
+
+          <li class="nav-item">
+            <a class="btn btn-success btn-sm px-3" href="/helper/login/">
+              Login
+            </a>
+          </li>
+
+        {% endif %}
+
+      </ul>
+
+    </div>
+  </div>
+</nav>
+  
 
         <div class="container-fluid">
             <div class="row justify-content-center">
+                {% set message = get_flashed_messages(with_categories=True) %}
+                        {% if message %}
+                        {% for msg , cat in message %}
+                            {% if cat == 'errormsg' %}
+                            <div class="alert alert-danger">{{msg}}</div>
+                            {% else %}
+                            <div class="alert alert-success">{{msg}}</div>
+                            {% endif %}
+                        {% endfor %}
+                        {% endif %}
+
+                {% if helpsigninform.errors %}
+                        <div class="alert alert-danger">
+                            {{helpsigninform.errors}}
+                        </div>
+                    {% endif %}
                 <div class="col-md-7 pt-3">
                     <img src="/static/images/painter.jpg" alt="a painter" class="img-fluid">
                 </div>
@@ -164,16 +227,6 @@
         
         <!-- Modal -->
             <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                {% set message = get_flashed_messages(with_categories=True) %}
-                {% if message %}
-                {% for msg , cat in message %}
-                    {% if cat == 'errormsg' %}
-                    <div class="alert alert-danger">{{msg}}</div>
-                    {% else %}
-                    <div class="alert alert-success">{{msg}}</div>
-                    {% endif %}
-                {% endfor %}
-                {% endif %}
                 <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header pt-5">
@@ -186,7 +239,7 @@
                         <!-- <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"> -->
                         {{ helpsigninform.email(placeholder='Email', class_='form-control p-3 mb-3')}}
                         <!-- <input type="email" placeholder="Email" class="form-control p-3 mb-3"> -->
-                        <div class="d-flex">
+                        <div class="d-flex gap-2">
                             {{ helpsigninform.fname(placeholder='Fistname',class_='form-control p-3')}}
                         <!-- <input type="text" placeholder="Firstname" class="form-control-sm p-3"> -->
                             {{ helpsigninform.lname(placeholder='Lastname',class_='form-control p-3')}}

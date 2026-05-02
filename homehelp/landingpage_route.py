@@ -3,8 +3,6 @@ from flask import render_template,request,session,redirect
 from homehelp import app
 from homehelp.models import db,Category,Worker,State,Review,Employer
 
-
-
 @app.route('/about/')
 def about():
     return render_template('landingpage/about.html')

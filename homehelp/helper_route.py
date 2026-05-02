@@ -11,7 +11,9 @@ from decimal import Decimal
 @app.route('/helper/register/', methods=["GET", "POST"])
 def helper_register():
     helpsigninform = HelpSigninForm()
-    helpsigninform.category.choices = [(cat.cat_id, cat.cat_name) for cat in db.session.query(Category).all()]
+    helpsigninform.category.choices = [(0, 'Select a category')] + [
+    (c.cat_id, c.cat_name) for c in Category.query.all()
+]
     if request.method == 'GET':
         return render_template('helper/helper_registration.html', helpsigninform=helpsigninform)
     else:
@@ -24,10 +26,15 @@ def helper_register():
             if helpsigninform.state.data == '0':
                 flash('errormsg', 'Please select a valid state.')
                 return render_template('helper/helper_registration.html', helpsigninform=helpsigninform)
+            
+            if helpsigninform.category.data == 0:
+                flash( "errormsg", "Please select a category")
+                return render_template("helper/helper_registration.html", helpsigninform=helpsigninform)
 
             if Worker.query.filter_by(worker_email=email).first():
                 flash("errormsg", "Already have an account, Please use a different email.")
                 return redirect('/helper/register/')
+            
             
             password = helpsigninform.password.data
             cpassword = helpsigninform.cpassword.data
@@ -41,7 +48,7 @@ def helper_register():
 
             # Check if passwords match
             if password != cpassword:
-                flash('Password mismatch, please ensure you enter the password correctly')
+                flash("errormsg", 'Password mismatch, please ensure you enter the password correctly')
                 return redirect('/helper/register/')
             else:
                 hashed_password = generate_password_hash(password, method='pbkdf2:sha256')

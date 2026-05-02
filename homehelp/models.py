@@ -80,8 +80,7 @@ class Experience(db.Model):
 
 class Category(db.Model):
     cat_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    cat_name = db.Column(db.String(100), nullable=False)
-
+    cat_name = db.Column(db.String(100), unique=True, nullable=False)
      # Relationship
     workers = db.relationship('Worker', back_populates='category', lazy=True)
     job_postings = db.relationship('JobPosting', back_populates='category', lazy=True)
@@ -133,7 +132,7 @@ class Payment(db.Model):
     pay_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     pay_amount = db.Column(db.Numeric, nullable=False)
     pay_date = db.Column(db.DateTime(), nullable=True)
-    pay_status= db.Column(db.Enum('pending','paid','failed','credited'), nullable=False, server_default=("pending"))
+    pay_status= db.Column(db.Enum('pending','paid','failed','credited', 'refunded', name='pay_status_enum'), nullable=False, server_default=("pending"))
     pay_data = db.Column(db.Text(), nullable=True)    
     pay_ref = db.Column(db.String(100), nullable=True)
     pay_employerid = db.Column(db.Integer, db.ForeignKey('employer.employer_id'),nullable=True)

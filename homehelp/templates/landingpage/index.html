@@ -9,6 +9,10 @@
     <title>HomeHelp</title>
     <style>
 
+      body {
+      background: #f7f8fa;
+    }
+
       *{
 	      padding:0px;
 	      margin:0px;
@@ -16,19 +20,70 @@
         font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
         max-width: 100%;
        }
+
+       .navbar {
+        background: #ffffff;
+        border-bottom: 1px solid #eee;
+        padding: 12px 20px;
+      }
+
+      /* HERO */
+.hero-section {
+  position: relative;
+  min-height: 80vh;
+  background-size: cover;
+  background-position: center;
+}
+
+/* SEARCH BORDER FIX */
+.border-teal {
+  border: 1px solid teal;
+  border-radius: 30px 0 0 30px;
+}
+
+/* FLOATING CATEGORY BAR */
+.category-float {
+  margin-top: -60px;
+  position: relative;
+  z-index: 10;
+}
+
+/* CARD STYLE LOOK */
+.category-float .row {
+  background: white;
+  border-radius: 15px;
+}
+
+/* ICON HOVER (optional but nice) */
+.category-float p {
+  transition: 0.2s ease-in-out;
+  cursor: pointer;
+}
+
+.category-float p:hover {
+  transform: translateY(-5px);
+  color: teal;
+}
        
        .pad{
         padding-left: 100px;
        }
 
-        .overlay{
-            background-image:url(/static/images/index-bg.jpg);
-            background-size: cover;
-            max-height: 600px;
-        }
+        .overlay {
+  background-image: url(/static/images/index-bg.jpg);
+  background-size: cover;
+  background-position: center top;
+  min-height: 600px;
+  color: white;
 
-        .overlay h1{
-            font-size: 60px;
+  display: flex;
+  align-items: center;   /* vertical center */
+}
+
+        .overlay h1 {
+          font-size: 55px;
+          font-weight: 700;
+          text-shadow: 0 2px 10px rgba(0,0,0,0.5);
         }
 
         #search{
@@ -72,6 +127,11 @@
           justify-content: center;
           
         }
+
+        .row {
+            margin-left: 0;
+            margin-right: 0;
+          }
        
         .btn:hover{
           border: none;
@@ -116,6 +176,41 @@
           padding-top: 20px;
           background-color: rgb(245, 247, 246);
         }
+
+       .help-card {
+  border-radius: 16px;
+  transition: all 0.25s ease;
+  min-height: 360px;   /* 👈 makes cards feel solid */
+}
+
+.help-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+}
+
+.helps {
+  width: 110px;   /* 👈 bigger profile image */
+  height: 110px;
+  object-fit: cover;
+}
+
+.helpers {
+  margin-top: 70px;
+  margin-bottom: 70px;
+}
+
+.help-card {
+  border-radius: 18px;
+  padding: 25px;
+  transition: 0.25s ease;
+  min-height: 380px;
+  background: #fff;
+}
+
+.help-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.12);
+}
         
         .help button{
           background-color:teal
@@ -176,130 +271,285 @@
         .log:hover{
             color: teal;
         }
+
+        .review-card {
+          min-height: 220px;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          border-radius: 12px;
+          transition: 0.2s ease-in-out;
+        }
+
+        .review-card:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+
+        .review-text {
+          flex-grow: 1;
+          font-size: 18px;
+          color: #444;
+          
+        }
+
+        .navbar-nav .nav-link {
+  font-size: 16px;
+}
+
+.nav-custom {
+  position: relative;
+  color: #000;
+}
+
+.nav-custom::after {
+  content: "";
+  position: absolute;
+  width: 0%;
+  height: 2px;
+  background: teal;
+  left: 0;
+  bottom: 0;
+  transition: 0.3s;
+}
+
+.nav-custom:hover::after {
+  width: 100%;
+}
     </style>
 </head>
 <body>
     <!-- navbar -->
-    <nav class="navbar navbar-expand-lg ">
-      <div class="container-fluid">
-        <div class="pad">
-          <a class="navbar-brand logo" href="#">HomeHelp</a>
-        </div>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-          <div class="navbar-nav ms-auto links">
-            {% if employer_deets %}
-              <a href="/employer/dashboard/" style="color:black; text-decoration:none; padding-top:10px; padding-right:10px;">
-                Hi {{ employer_deets.employer_name }}
-              </a>
-              <a href="/logout/" class="log">Logout</a>
+   <nav class="navbar navbar-expand-lg shadow-sm">
+  <div class="container-fluid">
 
-            {% elif worker_deets %}
-              <a href="/helper/dashboard/" style="color:black; text-decoration:none; padding-top:10px; padding-right:10px;">
-                Hi {{ worker_deets.worker_fname }} {{ worker_deets.worker_lname }}
-              </a>
-              <a href="/helper/logout/" class="log">Logout</a>
+    <!-- Logo -->
+    <a class="navbar-brand logo ps-3 fw-bold" href="/">HomeHelp</a>
+    </P>
 
-            {% else %}
-              <a class="nav-link style-link" href="/registration/">Sign up/Login</a>
-              <a class="nav-link style-helps" href="/helper/register/">Become a Helper</a>
-            {% endif %}
-        </div>
+    <!-- Toggler -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+      data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
-        </div>
-      </div>
-    </nav>
+    <!-- Links -->
+    <div class="collapse navbar-collapse" id="navbarNav">
+
+      <!-- LEFT (optional links like About) -->
+      <ul class="navbar-nav ms-3">
+
+        
+
+      </ul>
+
+      <!-- RIGHT SIDE -->
+      <ul class="navbar-nav ms-auto align-items-center gap-2">
+        <li class="nav-item">
+          <a class="nav-link fw-bold nav-custom" href="/about/">About</a>
+        </li>
+        {% if employer_deets %}
+
+          <li class="nav-item">
+            <span class="nav-link">
+              <a href="/employer/dashboard/" class="nav-link">Hi {{ employer_deets.employer_name }}</a>
+            </span>
+          </li>
+
+          <li class="nav-item">
+            <a class="btn btn-outline-dark btn-sm" href="/logout/">Logout</a>
+          </li>
+
+        {% elif worker_deets %}
+
+          <li class="nav-item">
+            <span class="nav-link">
+              <a href="/helper/profile/" class="nav-link">Hi {{ worker_deets.worker_fname }}</a>
+            </span>
+          </li>
+
+          <li class="nav-item">
+            <a class="btn btn-outline-dark btn-sm" href="/helper/logout/">Logout</a>
+          </li>
+
+        {% else %}
+
+          <li class="nav-item">
+            <a class="nav-link fw-bold" href="/registration/">Sign up / Login</a>
+          </li>
+
+          <li class="nav-item">
+            <a class="btn btn-success btn-sm" href="/helper/register/">
+              Become a Helper
+            </a>
+          </li>
+
+        {% endif %}
+
+      </ul>
+
+    </div>
+  </div>
+</nav>
     
-      <hr>
-      <!-- endnav -->
 
-        <div class="container-fluid overlay">
-            <div class="row ">
-                <div class="col-md-12 pt-5">
-                    <h1 class="text-center pt-5">Book trusted help <br>for home tasks</h1>
-                </div>
-            </div>
-              <div class="row">
-                <div class="col-md-6 offset-md-3 pt-5">
-                    <div class="search-container d-flex">
-                        <input type="text" placeholder="what do you need help with?" id="search-input" class="form-control-lg p-3 rmb" name="search"> 
-                        <button class="btn-primary pl-5 " id="search"><i class="fa-solid fa-magnifying-glass fa-1x text-light"></i></button>
-                    </div>
-                    <p id="show" class="text-center"></p>
-                  </div>
-              </div>
+  <!-- HERO SECTION -->
+<div class="container-fluid overlay d-flex align-items-center hero-section">
+
+  <div class="container">
+
+    <div class="row">
+      <div class="col-12 text-center text-dark">
+
+        <h1 class="mb-4">
+          Book trusted help <br>
+          for home tasks
+        </h1>
+
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-12 col-md-6 mx-auto">
+
+        <div class="d-flex shadow-sm">
+          <input type="text"
+                 placeholder="what do you need help with?"
+                 id="search-input"
+                 class="form-control form-control-lg border-teal">
+
+          <button class="btn btn-primary" id="search">
+            <i class="fa-solid fa-magnifying-glass text-light"></i>
+          </button>
         </div>
 
-        <div class="container-fluid">
-          <div class="row pt-4">
-            <div class="col-md offset-md-1 pt-5">
-              <p><i class="fa-solid fa-wrench fa-2x"></i><br>Furniture</p>
-            </div>
-            <div class="col-md pt-5">
-              <p><i class="fa-solid fa-truck fa-2x"></i><br>Moving</p>
-            </div>
-            <div class="col-md pt-5">
-              <p><i class="fa-solid fa-toolbox fa-2x "></i><br>Home Repairs</p>
-            </div>
-            <div class="col-md pt-5">
-              <p><i class="fa-solid fa-paint-roller fa-2x"></i><br>Painting</p>
-            </div>
-            <div class="col-md pt-5">
-              <p><i class="fa-solid fa-broom fa-2x"></i><br>Cleaning</p>
-            </div>
-            <div class="col-md pt-5">
-              <p><i class="fa-solid fa-fire fa-2x"></i><br>Trending</p>
-            </div>
-           </div>
-           <hr>
-        </div>
+        <p id="show" class="text-center mt-2"></p>
+
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- FLOATING CATEGORY SECTION -->
+<div class="container category-float d-none d-md-block">
+
+  <div class="row text-center bg-white shadow rounded-4 py-4 g-0">
+
+    <div class="col">
+      <p><i class="fa-solid fa-wrench fa-2x"></i><br>Furniture</p>
+    </div>
+
+    <div class="col">
+      <p><i class="fa-solid fa-truck fa-2x"></i><br>Moving</p>
+    </div>
+
+    <div class="col">
+      <p><i class="fa-solid fa-toolbox fa-2x"></i><br>Home Repairs</p>
+    </div>
+
+    <div class="col">
+      <p><i class="fa-solid fa-paint-roller fa-2x"></i><br>Painting</p>
+    </div>
+
+    <div class="col">
+      <p><i class="fa-solid fa-broom fa-2x"></i><br>Cleaning</p>
+    </div>
+
+    <div class="col">
+      <p><i class="fa-solid fa-fire fa-2x"></i><br>Trending</p>
+    </div>
+
+  </div>
+
+</div>
               
 
           <!-- Section one -->
-          <div class="container-fluid">
-          <div class="helpers">
-            <div class="row mt-5">
-                <div class="col-md-12 pt-5">
-                    <h2 class="text-center">Hire From Our Wide Range Of Skilled Artisans</h2>
-                </div>
-            </div>
+<div class="container py-5 helpers-section mt-2">
 
-            {% if workers %}
-            <div class="row justify-content-around">
-                {% for worker in workers %}
-                    <div class="col-md-3 text-center mt-5 ml-2 help shadow pb-5">
-                        {% if worker.experiences %}
-                            {% for experience in worker.experiences %}
-                                {% if experience.exp_picture %}
-                                    <img src="/static/images/uploads/{{ experience.exp_picture }}" alt="Worker Image" class="helps">
-                                {% else %}
-                                    <img src="/static/images/icons/helps.png" alt="Default Helper Icon" class="helps">
-                                {% endif %}
-                            {% endfor %}
-                        {% else %}
-                            <img src="/static/images/icons/helps.png" alt="Default Helper Icon" class="helps">
-                        {% endif %}
-                        <h3 class="pt-2">{{ worker.worker_fname }} {{ worker.worker_lname }}</h3>
-                        <p>{{ worker.category.cat_name if worker.category else 'No Category' }}</p>
-                        <img src="/static/images/icons/location.png" alt="Location Icon" class="img-fluid resizeicon">
-                        <span>{{ worker.state.state_name if worker.state else 'No State' }}</span>
-                        <br>
-                        <div class="pt-3">
-                            <p style="font-size:20px;">
-                                <a href="/hire/now/" class="btn btn-success">Hire Now</a>
-                            </p>
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>
-        {% else %}
-            <p>No workers found.</p>
-        {% endif %}
-        
-          </div>
-          </div>
+  <!-- Title -->
+  <div class="row mb-5 mt-5">
+    <div class="col-12 text-center">
+      <h1 class="fw-bold ">
+        Hire From Our Wide Range Of Skilled Artisans
+      </h1>
+    </div>
+  </div>
+
+  {% if workers %}
+
+  <div class="row g-5 justify-content-center mt-2">
+    {% for worker in workers %}
+
+    <!-- IMPORTANT: wider cards -->
+    <div class="col-12 col-md-6 col-lg-4 col-xl-4">
+
+      <div class="card h-100 shadow border-0 text-center p-4 help-card ">
+
+        <!-- Profile Image -->
+        <div class="mb-3">
+          {% if worker.experiences %}
+            {% for experience in worker.experiences %}
+              {% if experience.exp_picture %}
+                <img src="/static/images/uploads/{{ experience.exp_picture }}"
+                     class="rounded-circle helps"
+                     alt="Worker Image">
+              {% else %}
+                <img src="/static/images/icons/helps.png"
+                     class="rounded-circle helps"
+                     alt="Default Helper Icon">
+              {% endif %}
+            {% endfor %}
+          {% else %}
+            <img src="/static/images/icons/helps.png"
+                 class="rounded-circle helps"
+                 alt="Default Helper Icon">
+          {% endif %}
+        </div>
+
+        <!-- Name -->
+        <h4 class="fw-semibold mb-1">
+          {{ worker.worker_fname }} {{ worker.worker_lname }}
+        </h4>
+
+        <!-- Category -->
+        <p class="text-muted mb-2">
+          {{ worker.category.cat_name if worker.category else 'No Category' }}
+        </p>
+
+        <!-- Location -->
+        <div class="d-flex justify-content-center align-items-center gap-2 mb-3">
+          <img src="/static/images/icons/location.png" class="resizeicon">
+          <span class="text-muted">
+            {{ worker.state.state_name if worker.state else 'No State' }}
+          </span>
+        </div>
+
+        <!-- Button -->
+        <a href="/hire/now/" class="btn btn-success px-4">
+          Hire Now
+        </a>
+
+      </div>
+
+    </div>
+
+    {% endfor %}
+
+  </div>
+
+  {% else %}
+
+  <div class="text-center text-muted">
+    No workers found.
+  </div>
+
+  {% endif %}
+
+</div>
 
 
             <!-- Section two -->
@@ -325,30 +575,41 @@
             </div>
 
             <!-- Section three -->
-            <div class="container-fluid">
-            <div class="row reviews justify-content-center">
-              <div class="col-md-12 pt-5 mt-5 ">
-                <h2 class="pb-3">See what happy customers are saying about HomeHelp</h2>
-              </div>
-            </div>
-            {% if reviews %}
-            <div class="row justify-content-center resize">
-              {% for rev in reviews %}
-              <div class="col-md-4 p-5 wrap ">
-                <div class="card text-center p-3">
-                  <h3>{{rev.employer.employer_name}}</h3>
-                <p>"{{rev.review_comment}}"</p>
-                {% if rev.worker and rev.worker.category %}
-                <p class="color">{{ rev.worker.category.cat_name }}</p>  <!-- Display category name -->
-                {% else %}
-                <p class="color">No Category</p>
-                {% endif %}
+            <div class="container py-5">
+              <div class="row justify-content-center text-center mb-5 mt-5">
+                <div class="col-md-10">
+                  <h2 class=" text-bold">See what happy customers are saying about HomeHelp</h2>
                 </div>
               </div>
-              {% endfor %}
+
+              {% if reviews %}
+              <div class="row g-4 justify-content-center">
+                {% for rev in reviews %}
+                <div class="col-md-4 d-flex">
+                  
+                  <div class="card review-card w-100 text-center p-4 shadow-sm">
+                    
+                    <h5 class="mb-3">{{ rev.employer.employer_name }}</h5>
+
+                    <p class="review-text">"{{ rev.review_comment }}"</p>
+
+                    <div class="mt-auto">
+                      {% if rev.worker and rev.worker.category %}
+                        <span class="badge bg-success">
+                          {{ rev.worker.category.cat_name }}
+                        </span>
+                      {% else %}
+                        <span class="badge bg-secondary">No Category</span>
+                      {% endif %}
+                    </div>
+
+                  </div>
+
+                </div>
+                {% endfor %}
+              </div>
+              {% endif %}
             </div>
-            {% endif %}
-          </div>
               
             
             <div class="container-fluid">

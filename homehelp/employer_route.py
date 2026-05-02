@@ -27,6 +27,10 @@ def login():
 
             email = request.form.get('email')
             password = request.form.get('password')
+
+            if not email or not password:
+                flash('errormsg', 'Please fill in all fields')
+                return redirect('/login/')
         
             record = db.session.query(Employer).filter(Employer.employer_email == email).first()
             if not record:
@@ -46,6 +50,9 @@ def login():
             else:
                 flash('errormsg', 'Invalid Password')
                 return redirect('/login/')
+            
+        flash('errormsg', 'Invalid form submission, Please fill in all fields')
+    return redirect('/login/')
 
     
         
@@ -57,6 +64,8 @@ def signup():
         return render_template('employer/signup.html', signinform=signinform)
     
     if signinform.validate_on_submit():
+        email = signinform.email.data
+        
         if signinform.state.data == '0':
             flash('errormsg', 'Please select a valid state.')
             return render_template('employer/signup.html', signinform=signinform)
@@ -64,6 +73,10 @@ def signup():
         if signinform.password.data != signinform.cpassword.data:
             flash('errormsg','Password mismatch, please ensure you enter the password correctly')
             return render_template('employer/signup.html', signinform=signinform)
+        
+        if Employer.query.filter_by(employer_email=email).first():
+                flash("errormsg", "Already have an account, Please use a different email.")
+                return redirect('/helper/register/')
         
         hashed_password = generate_password_hash(signinform.password.data, method='pbkdf2:sha256')
         new_employer = Employer(
@@ -370,9 +383,7 @@ def send_job_description():
     subject = "New Job Opportunity from HomeHelp"
     body = f"""
     Hello {worker_name},
-
     You have received a new job description:
-
     {post_description}
 
     Please log in to your account for more details.
@@ -380,7 +391,7 @@ def send_job_description():
     Best regards,
     HomeHelp Team
     """
-    msg = Message(subject, sender='adeyemiidowu@moatcohorts.com.ng', recipients=[worker_email])
+    msg = Message(subject, sender='adeyemiid1@gmail.com', recipients=[worker_email])
     msg.body = body
     try:
         mail.send(msg)
@@ -391,6 +402,16 @@ def send_job_description():
     flash( "success", "Job description sent successfully!")
     return redirect(url_for('helpers'))
 
+@app.route("/test-email")
+def test_email():
+    msg = Message(
+        subject="Test Email",
+        sender=app.config["MAIL_USERNAME"],
+        recipients=["adeyemiid1@gmail.com"],
+        body="If you see this, email works 🎉"
+    )
+    mail.send(msg)
+    return "Email sent!"
 
 
 @app.route('/job/cancel/<int:post_id>', methods=['POST'])
@@ -401,8 +422,13 @@ def cancel_job(post_id):
         return redirect(url_for('login'))
 
     job = db.session.query(JobPosting).get(post_id)
+    
     if not job:
         flash("errormsg", "Job not found")
+        return redirect(url_for('dashboard'))
+    
+    if job.post_status == '4':
+        flash("errormsg", "Job has already been cancelled")
         return redirect(url_for('dashboard'))
 
     if job.post_employerid != loggedin_employer:
@@ -424,7 +450,7 @@ def cancel_job(post_id):
     payment = db.session.query(Payment).filter(
         Payment.pay_employerid == loggedin_employer,
         Payment.pay_workerid == job.post_workerid,
-        Payment.pay_status.in_(['pending', 'paid', 'failed','credited'])
+        Payment.pay_status.in_(['pending', 'paid', 'failed','credited', 'refunded'])
     ).order_by(Payment.pay_id.desc()).first()
 
     if not payment:
@@ -436,6 +462,7 @@ def cancel_job(post_id):
         if employer.employer_walletbalance is None:
             employer.employer_walletbalance = Decimal('0')
         employer.employer_walletbalance = employer.employer_walletbalance + payment.pay_amount
+
 
     payment.pay_status = 'refunded'
     try:

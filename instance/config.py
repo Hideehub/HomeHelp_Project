@@ -1,8 +1,19 @@
-SECRET_KEY = '9Pkq_EJ2KEY'
-SQLALCHEMY_DATABASE_URI = 'mysql+mysqlconnector://root@localhost/homehelp_db'
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+SECRET_KEY = os.getenv("SECRET_KEY")
+
+SQLALCHEMY_DATABASE_URI = os.getenv("SQLALCHEMY_DATABASE_URI")
 SQLALCHEMY_TRACK_MODIFICATIONS = False
-MAIL_SERVER = 'smtp.gmail.com' 
-MAIL_PORT = 587
-MAIL_USE_TLS = True
-MAIL_USERNAME = 'adeyemiid1@gmail.com'
-MAIL_PASSWORD = 'your-password'
+
+# EMAIL CONFIG (SSL MODE)
+MAIL_SERVER = os.getenv("MAIL_SERVER")
+MAIL_PORT = int(os.getenv("MAIL_PORT"))
+
+MAIL_USE_SSL = os.getenv("MAIL_USE_SSL") == "True"
+MAIL_USE_TLS = os.getenv("MAIL_USE_TLS") == "True"
+
+MAIL_USERNAME = os.getenv("MAIL_USERNAME")
+MAIL_PASSWORD = os.getenv("MAIL_PASSWORD")

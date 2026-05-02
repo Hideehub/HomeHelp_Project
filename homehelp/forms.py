@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from wtforms import StringField, TextAreaField,SubmitField,PasswordField,EmailField,SelectField,FileField,BooleanField,IntegerField,RadioField
-from wtforms.validators import DataRequired,Email, Length,InputRequired
+from wtforms.validators import DataRequired,Email, Length,InputRequired,EqualTo
 from  homehelp.models import db, Category
 
 
@@ -74,16 +74,28 @@ class SigninForm(FlaskForm):
 class HelpSigninForm(FlaskForm):
     fname = StringField('Name', validators=[DataRequired(message='Enter your first name')])
     lname = StringField('Name', validators=[DataRequired(message='Enter your last name')])
-    email = EmailField('Email', validators=[Email(message='Enter Email')])
+    email = EmailField('Email', validators=[Email(message='Enter a valid email')])
     phone = StringField('Phone', validators=[DataRequired(message='Enter your phone number')])
     price = StringField('Price', validators=[DataRequired(message='Set your price')])
-    password = PasswordField('Password', validators=[DataRequired(message='Password cannot be empty')])
-    cpassword = PasswordField('Password', validators=[DataRequired(message='Password cannot be empty')])
+    # password = PasswordField('Password', validators=[DataRequired(message='Password cannot be empty')])
+    # cpassword = PasswordField('Password', validators=[DataRequired(message='Password cannot be empty')])
+    password = PasswordField(
+    'Password',
+    validators=[DataRequired(), EqualTo('cpassword', message='Passwords must match')])
+    cpassword = PasswordField(
+    'Confirm Password',
+    validators=[DataRequired()]
+)
     # check = BooleanField('check')
     address = TextAreaField('Description', validators=[DataRequired(message='Address cannot be empty')])
     send = SubmitField('Create Account')
     image = FileField("Image", validators=[FileAllowed(['jpg','jpeg','png','gif'],'Images only')])
-    category = SelectField('Category', choices=[], validators=[DataRequired()])
+    category = SelectField(
+    'Category',
+    choices=[],
+    coerce=int,
+    validators=[DataRequired(message="Category is required")]
+)
     
     state = SelectField('State', choices=[(0,'Select your state'),(1, 'Abia State'), (2, 'Adamawa State'),
                                           (3, 'Akwa Ibom State'),
