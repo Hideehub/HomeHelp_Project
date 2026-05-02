@@ -402,17 +402,6 @@ def send_job_description():
     flash( "success", "Job description sent successfully!")
     return redirect(url_for('helpers'))
 
-@app.route("/test-email")
-def test_email():
-    msg = Message(
-        subject="Test Email",
-        sender=app.config["MAIL_USERNAME"],
-        recipients=["adeyemiid1@gmail.com"],
-        body="If you see this, email works 🎉"
-    )
-    mail.send(msg)
-    return "Email sent!"
-
 
 @app.route('/job/cancel/<int:post_id>', methods=['POST'])
 def cancel_job(post_id):
