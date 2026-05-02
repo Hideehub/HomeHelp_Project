@@ -2,7 +2,7 @@
 .env
 
 # Virtual environment (your actual one)
-Vhomehelp/
+vhomehelp/
 
 # Python cache
 __pycache__/
