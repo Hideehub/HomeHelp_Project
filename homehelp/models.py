@@ -51,8 +51,10 @@ class Worker(db.Model):
     worker_registrationdate = db.Column(db.DateTime(), default=datetime.utcnow)
     worker_gender = db.Column(db.String(45), nullable=True)
     worker_picture = db.Column(db.String(100), nullable=True)
-    worker_availability = db.Column(db.Enum('0','1'), nullable=False, server_default=('0'))
-    worker_verification = db.Column(db.Enum('0','1'), nullable=False, server_default=('0'))
+    worker_availability = db.Column(db.Boolean, default=False)
+    worker_verification = db.Column(db.Boolean, default=False)
+    # worker_availability = db.Column(db.Enum('0','1'), nullable=False, server_default=('0'))
+    # worker_verification = db.Column(db.Enum('0','1'), nullable=False, server_default=('0'))
     worker_address = db.Column(db.Text(), nullable=True)
     worker_price = db.Column(db.Numeric(10,2), nullable=False, default=0.00)
     worker_walletbalance = db.Column(db.Numeric, default=0)
@@ -102,7 +104,13 @@ class Review(db.Model):
 class JobApplication(db.Model):
     __tablename__ ='jobapplication'
     app_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    app_status = db.Column(db.Enum('0','1'), nullable=False, server_default=('0'))
+    # app_status = db.Column(db.Enum('0','1'), nullable=False, server_default=('0'))
+    app_status = db.Enum(
+    'pending', 'approved',
+    name='jobapplication_status_enum'
+    ),
+    nullable=False,
+    server_default='pending'
     app_dateapplied = db.Column(db.DateTime(), default=datetime.utcnow)
     app_agreedamount = db.Column(db.Numeric, nullable=False)
 
