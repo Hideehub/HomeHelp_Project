@@ -5,7 +5,12 @@ load_dotenv()
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 
-SQLALCHEMY_DATABASE_URI = os.getenv("SQLALCHEMY_DATABASE_URI")
+uri = os.getenv("DATABASE_URL") or os.getenv("SQLALCHEMY_DATABASE_URI")
+
+if uri and uri.startswith("postgres://"):
+    uri = uri.replace("postgres://", "postgresql://", 1)
+
+SQLALCHEMY_DATABASE_URI = uri
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 # EMAIL CONFIG (SSL MODE)
