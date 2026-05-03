@@ -21,13 +21,14 @@ def create_app():
 
     #db = SQLAlchemy(app)
     db.init_app(app)
+    with app.app_context():
+        db.create_all()
+
     migrate = Migrate(app,db)
     csrf.init_app(app)
     mail.init_app(app)
 
-    with app.app_context():
-        db.create_all()
-
+    
     return app
     
 app = create_app()
