@@ -105,10 +105,10 @@ class JobApplication(db.Model):
     __tablename__ ='jobapplication'
     app_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     # app_status = db.Column(db.Enum('0','1'), nullable=False, server_default=('0'))
-    app_status = db.Enum(
-    'pending', 'approved',
-    name='jobapplication_status_enum'
-    ),
+    app_status = db.Column(
+    db.String(20),
+    nullable=False,
+    default='pending')
     nullable=False,
     server_default='pending'
     app_dateapplied = db.Column(db.DateTime(), default=datetime.utcnow)
@@ -125,7 +125,7 @@ class JobPosting(db.Model):
     post_payrate = db.Column(db.Numeric, nullable=True)
     post_dateadded = db.Column(db.DateTime(), nullable=True)
     post_closingdate = db.Column(db.DateTime(), nullable=True)
-    post_status = db.Column(db.Enum('0','1','2','3','4'), nullable=False, server_default=('0'))
+    post_status = db.Column(db.String(2), nullable=False, default='0')
     post_categoryid = db.Column(db.Integer, db.ForeignKey('category.cat_id'),nullable=True)
     post_employerid = db.Column(db.Integer, db.ForeignKey('employer.employer_id'),nullable=True)
     post_workerid = db.Column(db.Integer, db.ForeignKey('worker.worker_id'), nullable=True)
@@ -140,7 +140,8 @@ class Payment(db.Model):
     pay_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     pay_amount = db.Column(db.Numeric, nullable=False)
     pay_date = db.Column(db.DateTime(), nullable=True)
-    pay_status= db.Column(db.Enum('pending','paid','failed','credited', 'refunded', name='pay_status_enum'), nullable=False, server_default=("pending"))
+    # pay_status= db.Column(db.Enum('pending','paid','failed','credited', 'refunded', name='pay_status_enum'), nullable=False, server_default=("pending"))
+    pay_status = db.Column(db.String(20), nullable=False, default='pending')
     pay_data = db.Column(db.Text(), nullable=True)    
     pay_ref = db.Column(db.String(100), nullable=True)
     pay_employerid = db.Column(db.Integer, db.ForeignKey('employer.employer_id'),nullable=True)

@@ -11,7 +11,7 @@ csrf = CSRFProtect()
 mail = Mail()
 
 def create_app():
-    from homehelp import models
+    import homehelp.models
 
     app = Flask(__name__,instance_relative_config=True)
 
