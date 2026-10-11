@@ -25,7 +25,7 @@ class SigninForm(FlaskForm):
     name = StringField('Full Name', validators=[DataRequired(), Length(min=2, max=100)])
     email = StringField('Email', validators=[DataRequired(), Email()])
     gender = SelectField('Gender', choices=[('','Select Gender'),('male','Male'),('female','Female'),('others','Others')],validators=[InputRequired()])
-    phone = IntegerField('Phone Number', validators=[DataRequired()])
+    phone = StringField('Phone Number', validators=[DataRequired(), Length(min=7, max=20)])
     address = StringField('Address', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired(), Length(min=6, max=100)])
     cpassword = PasswordField('Password', validators=[DataRequired()])

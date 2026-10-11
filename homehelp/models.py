@@ -51,10 +51,8 @@ class Worker(db.Model):
     worker_registrationdate = db.Column(db.DateTime(), default=datetime.utcnow)
     worker_gender = db.Column(db.String(45), nullable=True)
     worker_picture = db.Column(db.String(100), nullable=True)
-    worker_availability = db.Column(db.Boolean, default=False)
-    worker_verification = db.Column(db.Boolean, default=False)
-    # worker_availability = db.Column(db.Enum('0','1'), nullable=False, server_default=('0'))
-    # worker_verification = db.Column(db.Enum('0','1'), nullable=False, server_default=('0'))
+    worker_availability = db.Column(db.Integer, nullable=False, default=0, server_default='0')
+    worker_verification = db.Column(db.Integer, nullable=False, default=0, server_default='0')
     worker_address = db.Column(db.Text(), nullable=True)
     worker_price = db.Column(db.Numeric(10,2), nullable=False, default=0.00)
     worker_walletbalance = db.Column(db.Numeric, default=0)
@@ -129,12 +127,15 @@ class JobPosting(db.Model):
     post_categoryid = db.Column(db.Integer, db.ForeignKey('category.cat_id'),nullable=True)
     post_employerid = db.Column(db.Integer, db.ForeignKey('employer.employer_id'),nullable=True)
     post_workerid = db.Column(db.Integer, db.ForeignKey('worker.worker_id'), nullable=True)
+    # The payment that funds this job; each payment can fund only one job
+    post_payid = db.Column(db.Integer, db.ForeignKey('payment.pay_id'), nullable=True, unique=True)
 
     # relaionship
     category = db.relationship('Category', back_populates='job_postings')
     employer = db.relationship('Employer', backref='job_postings', lazy=True)
     worker = db.relationship('Worker', backref='job_postings', lazy=True)
     reviews = db.relationship("Review", back_populates="job", lazy=True)
+    payment = db.relationship("Payment", lazy=True)
 
 class Payment(db.Model):
     pay_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -143,7 +144,7 @@ class Payment(db.Model):
     # pay_status= db.Column(db.Enum('pending','paid','failed','credited', 'refunded', name='pay_status_enum'), nullable=False, server_default=("pending"))
     pay_status = db.Column(db.String(20), nullable=False, default='pending')
     pay_data = db.Column(db.Text(), nullable=True)    
-    pay_ref = db.Column(db.String(100), nullable=True)
+    pay_ref = db.Column(db.String(100), nullable=True, unique=True)
     pay_employerid = db.Column(db.Integer, db.ForeignKey('employer.employer_id'),nullable=True)
     pay_workerid =  db.Column(db.Integer, db.ForeignKey('worker.worker_id'),nullable=True)
 

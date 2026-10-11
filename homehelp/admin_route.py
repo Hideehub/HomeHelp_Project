@@ -16,18 +16,12 @@ def admin():
             email = adminloginform.email.data
             password = adminloginform.password.data
             record = db.session.query(Admin).filter(Admin.admin_email==email).first()
-            if record:
-                hashed_password = record.admin_password
-                chk = check_password_hash(hashed_password,password)
-                if chk:
-                    session['is_admin'] = record.admin_id
-                    return redirect('/admin/dashboard/')
-                else:
-                    flash('errormsg', 'Invalid Password')
-                    return redirect('/admin/login/')
-            else:
-                flash('errormsg', 'Invalid Email')
-                return redirect('/admin/login/')
+            if record and check_password_hash(record.admin_password, password):
+                session.clear()
+                session['is_admin'] = record.admin_id
+                return redirect('/admin/dashboard/')
+            flash('errormsg', 'Invalid email or password')
+            return redirect('/admin/login/')
         else:
             return render_template('admin/admin_login.html', adminloginform=adminloginform)
 
@@ -37,8 +31,8 @@ def admin_dashboard():
     loggedin_admin = session.get('is_admin')
     # Check if logged in as admin
     if not loggedin_admin:
-        flash('You must be logged in as an admin.')
-        return redirect('/admin/login')
+        flash('errormsg', 'You must be logged in as an admin.')
+        return redirect('/admin/login/')
 
     admin= Admin.query.all()
     workers = Worker.query.all()
@@ -62,88 +56,70 @@ def admin_dashboard():
 
 @app.route('/admin/change-status/', methods=['POST'])
 def change_status():
+    if not session.get('is_admin'):
+        return jsonify({"message": "Admin login required"}), 403
+
+    data = request.get_json(silent=True)
+    if not data:
+        return jsonify({"message": "No data provided"}), 400
+
+    record_id = data.get('worker_id')
+    new_status = data.get('worker_status')
+
+    if not record_id or new_status not in ('active', 'inactive'):
+        return jsonify({"message": "Missing worker ID or invalid status"}), 400
+
+    record = Worker.query.get(record_id)
+    if not record:
+        return jsonify({"message": "Worker not found"}), 404
+
+    record.worker_status = new_status
     try:
-        loggedin_admin = session.get('is_admin')
-        if loggedin_admin:
-            # Debugging - Log request
-            print("Request received:", request.json)
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        app.logger.exception("Changing worker status failed")
+        return jsonify({"message": "An error occurred, please try again."}), 500
 
-            data = request.get_json()
-            if not data:
-                return jsonify({"message": "No data provided"}), 400
-
-            worker_id = data.get('worker_id')
-            new_status = data.get('worker_status')
-
-            if not worker_id or not new_status:
-                return jsonify({"message": "Missing worker ID or status"}), 400
-
-            # Debugging - Log parsed data
-            print(f"Worker ID: {worker_id}, New Status: {new_status}")
-
-            # Find the worker by ID
-            worker = Worker.query.get(worker_id)
-            if not worker:
-                return jsonify({"message": "Worker not found"}), 404
-
-            # Update the status
-            worker.worker_status = new_status
-            db.session.commit()
-
-            # Debugging - Log successful update
-            print(f"Worker {worker_id} status updated to {new_status}")
-
-            return jsonify({
-                "message": f"Worker status updated to {new_status}.",
-                "new_status": new_status
-            }), 200
-
-    except Exception as e:
-        # Debugging - Log error
-        print("Error occurred:", str(e))
-        return jsonify({"message": f"An error occurred: {str(e)}"}), 500
+    return jsonify({
+        "message": f"Worker status updated to {new_status}.",
+        "new_status": new_status
+    }), 200
 
 
 
 @app.route('/admin/changestatus/', methods=['POST'])
 def changestatus():
+    if not session.get('is_admin'):
+        return jsonify({"message": "Admin login required"}), 403
+
+    data = request.get_json(silent=True)
+    if not data:
+        return jsonify({"message": "No data provided"}), 400
+
+    record_id = data.get('employer_id')
+    new_status = data.get('employer_status')
+
+    if not record_id or new_status not in ('active', 'inactive'):
+        return jsonify({"message": "Missing employer ID or invalid status"}), 400
+
+    record = Employer.query.get(record_id)
+    if not record:
+        return jsonify({"message": "Employer not found"}), 404
+
+    record.employer_status = new_status
     try:
-        loggedin_admin = session.get('is_admin')
-        if loggedin_admin:
-            print("Request received:", request.json)
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        app.logger.exception("Changing employer status failed")
+        return jsonify({"message": "An error occurred, please try again."}), 500
 
-            data = request.get_json()
-            if not data:
-                return jsonify({"message": "No data provided"}), 400
+    return jsonify({
+        "message": f"Employer status updated to {new_status}.",
+        "new_status": new_status
+    }), 200
 
-            employer_id = data.get('employer_id')
-            new_status = data.get('employer_status')
-
-            if not employer_id or not new_status:
-                return jsonify({"message": "Missing worker ID or status"}), 400
-
-            print(f"Worker ID: {employer_id}, New Status: {new_status}")
-
-            employer = Employer.query.get(employer_id)
-            if not employer:
-                return jsonify({"message": "Worker not found"}), 404
-
-            # Update status
-            employer.employer_status = new_status
-            db.session.commit()
-
-            # Debugging - Log successful update
-            print(f"Worker {employer_id} status updated to {new_status}")
-
-            return jsonify({
-                "message": f"Worker status updated to {new_status}.",
-                "new_status": new_status
-            }), 200
-
-    except Exception as e:
-        print("Error occurred:", str(e))
-        return jsonify({"message": f"An error occurred: {str(e)}"}), 500
-    
 
 
 @app.route('/admin/reviews/')
@@ -175,7 +151,7 @@ def delete_review(review_id):
     review = Review.query.get_or_404(review_id)
     db.session.delete(review)
     db.session.commit()
-    flash('success' 'Review deleted successfully')
+    flash('success', 'Review deleted successfully')
     return redirect(url_for('admin_reviews'))
 
 
@@ -213,17 +189,18 @@ def process_withdrawal(withdraw_id):
         return redirect(url_for('admin'))
     
     withdrawal = Withdrawal.query.get(withdraw_id)
-    if not withdrawal:
-        flash("errormsg", "Withdrawal request not found.")
+    if not withdrawal or withdrawal.withdraw_status != 'pending':
+        flash("errormsg", "Pending withdrawal request not found.")
         return redirect(url_for('admin_withdrawals'))
     
     withdrawal.withdraw_status = 'credited'
     try:
         db.session.commit()
         flash("success", "Withdrawal marked as processed.")
-    except Exception as e:
+    except Exception:
         db.session.rollback()
-        flash("errormsg", "Error processing withdrawal: " + str(e))
+        app.logger.exception("Processing withdrawal failed")
+        flash("errormsg", "Error processing withdrawal. Please try again.")
     
     return redirect(url_for('admin_withdrawals'))
 
@@ -254,7 +231,7 @@ def admin_payments():
 
 @app.route('/admin/logout/')
 def admin_logout():
-    session.pop('is_admin', None)
+    session.clear()
     flash('feedback', "You have logged out....")
     return redirect('/admin/login/')
 

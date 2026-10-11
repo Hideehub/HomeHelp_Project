@@ -1,9 +1,9 @@
-import os,secrets
 from flask import render_template,request,redirect,session,flash,url_for
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from homehelp.models import db,Worker,Employer, Experience,Category,JobPosting,WorkerRecipient,Withdrawal,Payment
+from homehelp.models import db,Worker,Employer, Experience,Category,JobPosting,WorkerRecipient,Withdrawal
 from homehelp.forms import HelpLoginForm, HelpSigninForm
+from homehelp.utils import save_image, parse_amount
 from homehelp import app
 from decimal import Decimal
 
@@ -17,61 +17,49 @@ def helper_register():
     if request.method == 'GET':
         return render_template('helper/helper_registration.html', helpsigninform=helpsigninform)
     else:
-        print(request.form, helpsigninform.validate_on_submit())
-        print(helpsigninform.errors)
-        
         if helpsigninform.validate_on_submit():
             email = helpsigninform.email.data
 
             if helpsigninform.state.data == '0':
                 flash('errormsg', 'Please select a valid state.')
                 return render_template('helper/helper_registration.html', helpsigninform=helpsigninform)
-            
+
             if helpsigninform.category.data == 0:
                 flash( "errormsg", "Please select a category")
+                return render_template("helper/helper_registration.html", helpsigninform=helpsigninform)
+
+            price = parse_amount(helpsigninform.price.data)
+            if price is None:
+                flash("errormsg", "Please enter a valid price.")
                 return render_template("helper/helper_registration.html", helpsigninform=helpsigninform)
 
             if Worker.query.filter_by(worker_email=email).first():
                 flash("errormsg", "Already have an account, Please use a different email.")
                 return redirect('/helper/register/')
-            
-            
-            password = helpsigninform.password.data
-            cpassword = helpsigninform.cpassword.data
-            fname = helpsigninform.fname.data
-            lname = helpsigninform.lname.data
-            phone = helpsigninform.phone.data
-            address = helpsigninform.address.data
-            state = helpsigninform.state.data
-            category = helpsigninform.category.data
-            price = helpsigninform.price.data
 
-            # Check if passwords match
-            if password != cpassword:
-                flash("errormsg", 'Password mismatch, please ensure you enter the password correctly')
-                return redirect('/helper/register/')
-            else:
-                hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
-                new_worker = Worker(
-                    worker_fname=fname,
-                    worker_lname=lname,
-                    worker_password=hashed_password,
-                    worker_email=email,
-                    worker_phoneno=phone,
-                    worker_address=address,
-                    worker_stateid=state,
-                    worker_categoryid=category,
-                    worker_price=price,
-                    worker_status='active'
-                )
-                
-                db.session.add(new_worker)
-                db.session.commit()
+            hashed_password = generate_password_hash(helpsigninform.password.data, method='pbkdf2:sha256')
+            new_worker = Worker(
+                worker_fname=helpsigninform.fname.data,
+                worker_lname=helpsigninform.lname.data,
+                worker_password=hashed_password,
+                worker_email=email,
+                worker_phoneno=helpsigninform.phone.data,
+                worker_address=helpsigninform.address.data,
+                worker_stateid=helpsigninform.state.data,
+                worker_categoryid=helpsigninform.category.data,
+                worker_price=price,
+                worker_status='active'
+            )
 
-                worker_id = new_worker.worker_id
+            db.session.add(new_worker)
+            db.session.commit()
 
-                flash('success', 'An account has been created for you!')
-                return redirect(url_for('helper_verification', worker_id=worker_id))
+            worker_id = new_worker.worker_id
+            # Only the person who just registered may fill in this worker's verification step
+            session['pending_worker_id'] = worker_id
+
+            flash('success', 'An account has been created for you!')
+            return redirect(url_for('helper_verification', worker_id=worker_id))
 
         return render_template('helper/helper_registration.html', helpsigninform=helpsigninform)
 
@@ -79,25 +67,24 @@ def helper_register():
 
 @app.route('/helper/<int:worker_id>/verification/', methods=["GET","POST"])
 def helper_verification(worker_id):
+    if worker_id not in (session.get('pending_worker_id'), session.get('worker_id')):
+        flash('errormsg', 'Please log in to continue.')
+        return redirect(url_for('helper_login'))
+
     if request.method == 'GET':
         return render_template('helper/helper_verification.html',worker_id=worker_id)
     else:
-    # retrieve form data
+        # retrieve form data
         years = request.form.get('exp_years')
         about = request.form.get('exp_about')
+        if not years or not about:
+            flash('errormsg', 'Please fill in your experience details.')
+            return redirect(url_for('helper_verification', worker_id=worker_id))
 
-        # Retrieve file data 
-        allowed_ext =['.jpg','.jpeg', '.png', '.gif']
-        file = request.files.get('exp_picture')
-        _,ext = os.path.splitext(file.filename)
-        rand_str = secrets.token_hex(10)
-        filename =''
-        if ext in allowed_ext:
-            filename = f'{rand_str}{ext}'
-            file.save(f'homehelp/static/images/uploads/{filename}')
-        else:
+        filename = save_image(request.files.get('exp_picture'))
+        if not filename:
             flash('errormsg', 'Your cover image must be an image file')
-            return redirect(url_for('helper_verification', worker_id=worker_id))    
+            return redirect(url_for('helper_verification', worker_id=worker_id))
         # Save to database
         push = Experience(
             exp_years=years,
@@ -107,10 +94,11 @@ def helper_verification(worker_id):
         )
         db.session.add(push)
         db.session.commit()
+        session.pop('pending_worker_id', None)
 
         flash('success','Profile created successfully')
-        return redirect(url_for('helper_login', worker_id=worker_id))
-       
+        return redirect(url_for('helper_login'))
+
 
 
 
@@ -121,39 +109,35 @@ def helper_login():
         return render_template('helper/helper_login.html', helploginform=helploginform)
     else:
         if helploginform.validate_on_submit():
-            if session.get('role') == 'employer':
-                session.clear()
-
             email = helploginform.email.data
             password = helploginform.password.data
-            
+
             record = db.session.query(Worker).filter(Worker.worker_email==email).first()
-            if not record:
-                flash('errormsg', 'Invalid Email')
+            if not record or not check_password_hash(record.worker_password, password):
+                flash('errormsg', 'Invalid email or password')
                 return redirect('/helper/login/')
             if record.worker_status == "inactive":
                 flash('errormsg', 'Your account is inactive. Please contact admin.')
                 return redirect('/helper/login/')
-            hashed_password = record.worker_password
-            chk = check_password_hash(hashed_password, password)
-            if chk:
-                session['role'] = 'worker'
-                session['worker_id'] = record.worker_id
-                session['loggedin_worker'] = True
-                return redirect('/helper/dashboard/')
-            else:
-                flash('errormsg', 'Invalid Password')
-                return redirect('/helper/login/')
-     
-     
+
+            # Start a fresh session so no other role's login carries over
+            session.clear()
+            session['role'] = 'worker'
+            session['worker_id'] = record.worker_id
+            session['loggedin_worker'] = True
+            return redirect('/helper/dashboard/')
+
+        flash('errormsg', 'Invalid form submission, Please fill in all fields')
+        return redirect('/helper/login/')
+
+
 
 @app.route('/helper/dashboard/', methods=["GET"])
 def helper_dashboard():
     loggedin_worker = session.get('worker_id')
-    print(loggedin_worker)
     if loggedin_worker:
         worker_deets = db.session.query(Worker).get(loggedin_worker)
-        experiences = worker_deets.experiences 
+        experiences = worker_deets.experiences
         # Fetch assigned jobs
         assigned_jobs = db.session.query(JobPosting).filter_by(post_workerid=loggedin_worker).all()
 
@@ -173,49 +157,44 @@ def helper_dashboard():
 def update_jobstatus():
     loggedin_worker = session.get('worker_id')
     if not loggedin_worker:
-        flash("warning","You must be logged in as a worker.")
-        return redirect(url_for('helper_login'))  
+        flash("errormsg","You must be logged in as a worker.")
+        return redirect(url_for('helper_login'))
 
-    post_id_str = request.form.get('post_id')
     try:
-        post_id = int(post_id_str)
+        post_id = int(request.form.get('post_id'))
     except (TypeError, ValueError):
-        flash("warning", "Invalid job ID.")
-        return redirect(url_for('helper_dashboard')) 
-
-    action = request.form.get('action')
-    job = JobPosting.query.get(post_id)
-    if not job:
-        flash("warning", "Job not found.")
+        flash("errormsg", "Invalid job ID.")
         return redirect(url_for('helper_dashboard'))
 
-    if job.post_status in ['1', '2', '3']:
-        flash("warning", "You have already responded to this job.")
+    action = request.form.get('action')
+    job = db.session.query(JobPosting).with_for_update().filter_by(post_id=post_id).first()
+    # Workers can only respond to jobs that were sent to them
+    if not job or job.post_workerid != loggedin_worker:
+        db.session.rollback()
+        flash("errormsg", "Job not found.")
+        return redirect(url_for('helper_dashboard'))
+
+    if job.post_status != '0':
+        db.session.rollback()
+        flash("errormsg", "You have already responded to this job.")
         return redirect(url_for('helper_dashboard'))
 
     if action == "1":
         job.post_status = '1'  # '1' means accepted
-        job.post_workerid = loggedin_worker
         flash("feedback", "Job accepted successfully!")
     elif action == "2":
         job.post_status = '2'  # '2' means rejected
-        payment = Payment.query.filter(
-            Payment.pay_employerid == job.post_employerid,
-            Payment.pay_workerid == job.post_workerid,
-            Payment.pay_status == 'paid'
-        ).first()
-        employer = Employer.query.get(job.post_employerid)
-        if payment and employer:
-            # Ensuring employer wallet_balance is initialized.
-            if employer.employer_walletbalance is None:
-                employer.employer_walletbalance = Decimal('0')
-            employer.employer_walletbalance = employer.employer_walletbalance + payment.pay_amount
-        flash("warning", "Job rejected.")
-    elif action == "3":
-        job.post_status = '3'  # '3' means job completed
-        flash("feedback", "Job marked as completed.")
+        # Refund the employer the payment that funded this job, once
+        payment = job.payment
+        if payment and payment.pay_status == 'paid':
+            employer = db.session.get(Employer, job.post_employerid, with_for_update=True)
+            if employer:
+                employer.employer_walletbalance = (employer.employer_walletbalance or Decimal('0')) + payment.pay_amount
+                payment.pay_status = 'refunded'
+        flash("feedback", "Job rejected.")
     else:
-        flash("warning", "Invalid action.")
+        db.session.rollback()
+        flash("errormsg", "Invalid action.")
         return redirect(url_for('helper_dashboard'))
 
     db.session.commit()
@@ -228,19 +207,23 @@ def update_bank_details():
     loggedin_worker = session.get('worker_id')
     if not loggedin_worker:
         flash("errormsg", "You must be logged in as an helper.")
-        return redirect(url_for('helper_login'))  
+        return redirect(url_for('helper_login'))
 
     if request.method == 'GET':
         worker_deets = db.session.query(Worker).get(loggedin_worker)
         recipient = db.session.query(WorkerRecipient).filter_by(recp_workerid=loggedin_worker).first()
         return render_template('helper/helper_payout.html',recipient=recipient,worker_deets=worker_deets)
 
-    recp_bankaccount_name = request.form.get('bank_account_name')
-    recp_bank_number = request.form.get('bank_account_number')
-    recp_bank_code = request.form.get('bank_code')
+    recp_bankaccount_name = (request.form.get('bank_account_name') or '').strip()
+    recp_bank_number = (request.form.get('bank_account_number') or '').strip()
+    recp_bank_code = (request.form.get('bank_code') or '').strip()
 
     if not recp_bankaccount_name or not recp_bank_number or not recp_bank_code:
         flash( "errormsg", "Please fill in all required fields.")
+        return redirect(url_for('update_bank_details'))
+
+    if not recp_bank_number.isdigit() or len(recp_bank_number) != 10:
+        flash("errormsg", "Account number must be 10 digits.")
         return redirect(url_for('update_bank_details'))
 
     recipient = WorkerRecipient.query.filter_by(recp_workerid=loggedin_worker).first()
@@ -262,11 +245,12 @@ def update_bank_details():
         db.session.commit()
         flash("success", "Bank details updated successfully.")
         return redirect (url_for('request_withdrawal'))
-    except Exception as e:
+    except Exception:
         db.session.rollback()
-        flash("errormsg", "Error updating bank details: " + str(e))
-    
-    return redirect(url_for('helper_dashboard'))  
+        app.logger.exception("Updating worker bank details failed")
+        flash("errormsg", "Error updating bank details. Please try again.")
+
+    return redirect(url_for('helper_dashboard'))
 
 
 
@@ -277,30 +261,34 @@ def request_withdrawal():
         flash("errormsg", "You must be logged in")
         return redirect(url_for('helper_login'))
 
-    worker_deets = db.session.query(Worker).get(loggedin_worker)
     if request.method == 'GET':
+        worker_deets = db.session.query(Worker).get(loggedin_worker)
         return render_template('helper/helper_withdrawal.html', worker_deets=worker_deets)
-    
-    try:
-        amount = float(request.form.get('amount'))
-    except ValueError:
-        flash("errormsg", "Invalid withdrawal amount.")
-        return redirect(url_for('request_withdrawal'))
 
-    if amount > float(worker_deets.worker_walletbalance):
-        flash("errormsg", "Insufficient funds.")
+    amount = parse_amount(request.form.get('amount'))
+    if amount is None:
+        flash("errormsg", "Invalid withdrawal amount.")
         return redirect(url_for('request_withdrawal'))
 
     recipient = db.session.query(WorkerRecipient).filter_by(recp_workerid=loggedin_worker).first()
     if not recipient:
+        flash("errormsg", "Please add your bank details first.")
         return redirect(url_for('update_bank_details'))
 
-    worker_deets.worker_walletbalance = worker_deets.worker_walletbalance - Decimal(amount)
+    # Lock the row so two simultaneous requests can't both spend the same balance
+    worker_deets = db.session.get(Worker, loggedin_worker, with_for_update=True)
+    balance = worker_deets.worker_walletbalance or Decimal('0')
+    if amount > balance:
+        db.session.rollback()
+        flash("errormsg", "Insufficient funds.")
+        return redirect(url_for('request_withdrawal'))
+
+    worker_deets.worker_walletbalance = balance - amount
 
     new_withdrawal = Withdrawal(
         withdraw_userid=loggedin_worker,
         withdraw_usertype='worker',
-        withdraw_amount=Decimal(amount),
+        withdraw_amount=amount,
         withdraw_status='pending'
     )
     db.session.add(new_withdrawal)
@@ -309,10 +297,11 @@ def request_withdrawal():
         db.session.commit()
         flash("success", "Withdrawal request submitted. Your funds will be processed manually.")
         return redirect(url_for('request_withdrawal'))
-    except Exception as e:
+    except Exception:
         db.session.rollback()
-        flash("errormsg", "Error processing withdrawal: " + str(e))
-    
+        app.logger.exception("Worker withdrawal failed")
+        flash("errormsg", "Error processing withdrawal. Please try again.")
+
     return redirect(url_for('helper_dashboard'))
 
 
@@ -322,49 +311,44 @@ def helper_profile():
     loggedin_worker = session.get('worker_id')
     if loggedin_worker:
         worker_deets = db.session.query(Worker).get(loggedin_worker)
-        state = worker_deets.state.state_name
-        experiences = worker_deets.experiences 
+        state = worker_deets.state.state_name if worker_deets.state else "Not specified"
+        experiences = worker_deets.experiences
         return render_template('helper/helper_profile.html', worker_deets=worker_deets,state=state,experiences=experiences)
     else:
         flash('errormsg', 'You must be loggedin')
         return redirect("/helper/login/")
- 
-    
+
+
 
 @app.route('/update/<worker_id>/profile/',methods=["GET",'POST'])
 def profile_update(worker_id):
     loggedin_worker = session.get('worker_id')
     if loggedin_worker:
-        worker_deets = db.session.query(Worker).get(worker_id)
-        experiences = worker_deets.experiences 
+        # Always edit the logged-in worker, never the id in the URL
+        worker_deets = db.session.query(Worker).get(loggedin_worker)
+        experiences = worker_deets.experiences
         if request.method == "POST":
-            worker_fname = request.form.get('fname')
-            worker_lname = request.form.get('lname')
-            worker_phone = request.form.get('phone')
-            worker_address = request.form.get('address')
-            worker_price = request.form.get('price')
-
-            allowed_ext =['.jpg','.jpeg', '.png', '.gif']
-            file = request.files.get('exp_picture')
-            _,ext = os.path.splitext(file.filename)
-            rand_str = secrets.token_hex(10)
-            filename =''
-            if ext in allowed_ext:
-                filename = f'{rand_str}{ext}'
-                file.save(f'homehelp/static/images/uploads/{filename}')
-            else:
+            filename = save_image(request.files.get('exp_picture'))
+            if filename is False:
                 flash('errormsg', 'Your cover image must be an image file')
                 return redirect('/helper/profile/')
-            
-            worker_deets.worker_fname = worker_fname
-            worker_deets.worker_lname = worker_lname
-            worker_deets.worker_phoneno = worker_phone
-            worker_deets.worker_address = worker_address
-            worker_deets.worker_price = worker_price
-            if experiences:
+
+            worker_price = request.form.get('price')
+            if worker_price:
+                price = parse_amount(worker_price)
+                if price is None:
+                    flash('errormsg', 'Please enter a valid price.')
+                    return redirect('/helper/profile/')
+                worker_deets.worker_price = price
+
+            worker_deets.worker_fname = request.form.get('fname') or worker_deets.worker_fname
+            worker_deets.worker_lname = request.form.get('lname') or worker_deets.worker_lname
+            worker_deets.worker_phoneno = request.form.get('phone') or worker_deets.worker_phoneno
+            worker_deets.worker_address = request.form.get('address') or worker_deets.worker_address
+            if filename and experiences:
                 experiences[0].exp_picture = filename
             db.session.commit()
-            flash("feedback", "Profile details updated succeddfully!")
+            flash("feedback", "Profile details updated successfully!")
             return redirect('/helper/profile/')
         else:
             return redirect('/helper/profile/')
@@ -376,6 +360,6 @@ def profile_update(worker_id):
 
 @app.route('/helper/logout/')
 def helper_logout():
-    session.pop('worker_id', None)
+    session.clear()
     flash('feedback', "You have logged out....")
     return redirect('/helper/login/')

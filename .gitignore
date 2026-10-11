@@ -1,8 +1,11 @@
 # Environment variables
 .env
 
-# Virtual environment (your actual one)
+# Virtual environments
 vhomehelp/
+Vhomehelp/
+venv/
+.venv/
 
 # Python cache
 __pycache__/
@@ -12,8 +15,12 @@ __pycache__/
 # OS files
 .DS_Store
 
-# Flask instance folder (optional but recommended if it has config/secrets)
+# Flask instance folder (local overrides only)
 instance/
+
+# User uploads (live on the server's persistent disk, not in git)
+homehelp/static/images/uploads/*
+!homehelp/static/images/uploads/.gitkeep
 
 # Logs
 *.log

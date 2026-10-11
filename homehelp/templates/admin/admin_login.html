@@ -40,7 +40,7 @@
 
                 
             <div class="col-md-5">
-                <form action="/admin/login" method="post" novalidate>
+                <form action="/admin/login/" method="post" novalidate>
                     {{ adminloginform.csrf_token }}
                     
                     {{ adminloginform.email(placeholder="Enter your email", class_="form-control mt-3 p-2")}}

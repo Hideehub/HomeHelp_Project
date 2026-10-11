@@ -1,4 +1,5 @@
 from flask import render_template,request,session,redirect
+from markupsafe import escape
 
 from homehelp import app
 from homehelp.models import db,Category,Worker,State,Review,Employer
@@ -40,14 +41,14 @@ def index():
 
 @app.route('/ajax/search/', methods=['POST']) 
 def search():
-    search_data = request.form.get('search')
+    search_data = (request.form.get('search') or '').strip()
     search_result = ''
-    if search_data != '':
+    if search_data:
         search_filter = f'%{search_data}%'
         categories = Category.query.filter(Category.cat_name.like(search_filter)).all()
         search_result = ''
         for category in categories:
-            search_result += f' <a href="/all/helpers/?category_id={category.cat_id}" style="text-decoration:none; color:black"> <span>{category.cat_name}</span></a><br>'
+            search_result += f' <a href="/all/helpers/?category_id={category.cat_id}" style="text-decoration:none; color:black"> <span>{escape(category.cat_name)}</span></a><br>'
         return search_result
     else:
         return search_result
